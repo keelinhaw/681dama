@@ -11,6 +11,6 @@
 	Password: <input type="text" name="password"><br>
 	<input type="submit" value="Submit"><br/>
 </form>
-<a href="./signup.html">Sign Up</a>
+<a href="./signup.php">Sign Up</a>
 </body>
 </html>
