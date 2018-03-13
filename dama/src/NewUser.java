@@ -34,24 +34,33 @@ public class NewUser extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
         response.setContentType("text/html;charset=UTF-8");
-        try {
         String email = request.getParameter("email");
         String username = request.getParameter("username");
         String password1 = request.getParameter("password1");
         String password2 = request.getParameter("password2");
-
-        	Class.forName("oracle.jdbc.driver.OracleDriver");
-    		Connection con = DriverManager.getConnection ("jdbc:oracle:thin:@dama.cc0rojk8d4jm.us-east-1.rds.amazonaws.com:1521:dama","swe681","SWEpass123");
-    		String query = "INSERT INTO USERS VALUES (?,?,?)";
-    		PreparedStatement ps = con.prepareStatement(query);
-    		ps.clearParameters();
-    		ps.setString(1, email);
-    		ps.setString(2, username);
-    		ps.setString(3, password1);
-    		ps.executeUpdate();
-    		} 
-        catch (SQLException | ClassNotFoundException e) {
-        		e.printStackTrace();
+        if (password1 == password2) {
+	        try {
+		        String email = request.getParameter("email");
+		        String username = request.getParameter("username");
+		        String password1 = request.getParameter("password1");
+		        String password2 = request.getParameter("password2");
+		
+		        	Class.forName("oracle.jdbc.driver.OracleDriver");
+		    		Connection con = DriverManager.getConnection ("jdbc:oracle:thin:@dama.cc0rojk8d4jm.us-east-1.rds.amazonaws.com:1521:dama","swe681","SWEpass123");
+		    		String query = "INSERT INTO USERS VALUES (?,?,?)";
+		    		PreparedStatement ps = con.prepareStatement(query);
+		    		ps.clearParameters();
+		    		ps.setString(1, email);
+		    		ps.setString(2, username);
+		    		ps.setString(3, password1);
+		    		ps.executeUpdate();
+	    		} 
+	        catch (SQLException | ClassNotFoundException e) {
+	        		e.printStackTrace();
+	        }
+        }
+        else {
+        		response.sendRedirect("./failure.html");
         }
         response.sendRedirect("./success.html");
 	}
