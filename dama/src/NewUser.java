@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import oracle.jdbc.driver.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -59,8 +58,8 @@ public class NewUser extends HttpServlet {
 		        String password2 = request.getParameter("password2");
 */		
 
-
-/*		        	Class.forName("oracle.jdbc.driver.OracleDriver");
+/*
+		        	Class.forName("oracle.jdbc.driver.OracleDriver");
 		    		Connection con = DriverManager.getConnection ("jdbc:oracle:thin:@dama.cc0rojk8d4jm.us-east-1.rds.amazonaws.com:1521:dama","swe681","SWEpass123");
 		    		String query = "INSERT INTO USERS VALUES (?,?,?)";
 */
