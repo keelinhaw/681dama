@@ -27,4 +27,5 @@
 <br/>
 My session is ${sessionScope.username}
 </body>
+
 </html>
