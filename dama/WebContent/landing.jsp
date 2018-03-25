@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>Dama Game</title>
 </head>
 <body>
 <%
@@ -19,13 +19,23 @@
 
 %>
 <h1>Dama Landing Page</h1>
-<button type="button" onclick="./NewGame">New Game</button>
-<h2>My Games</h2>
+<h2> don't forget to html encode the username being displayed</h2>
+Welcome ${sessionScope.username}
+<br/><br/>
+<!--<button type="button" onclick="./NewGame">Play New Game</button>-->
+<form name="NewGame" action="./NewGame.jsp" method="POST">
+    <input type="submit" value="Play New Game" name="newgame" />
+</form>
+<br/><br/>
+<form action="GameHistory.jsp" method="POST">
+<!--    <input type="text" name="username" value="${sessionScope.username}" /> -->
+    <input type="submit" value="View My Game History" name="gamehistory" />
+</form>
+<br/><br/>
 <form action="./Logout" method="post">
     <input type="submit" value="Logout" />
 </form>
 <br/>
-My session is ${sessionScope.username}
-</body>
 
+</body>
 </html>
