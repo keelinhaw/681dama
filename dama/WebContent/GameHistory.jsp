@@ -2,7 +2,7 @@
 <%-- 
     Document   : GameHistory
     Created on : Mar 18, 2018, 8:50:46 PM
-    Author     : Chadia
+    Author     : Chadia Habib
 --%>
 <%@page import="java.sql.*" %>
 <% Class.forName("org.postgresql.Driver"); %>
