@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.security.SecureRandom;
+import java.sql.ResultSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -76,15 +77,25 @@ public class NewUser extends HttpServlet {
                 String dbuser = properties.getPropValues("dbuser");
                 String dbpassword = properties.getPropValues("dbpassword");
 
-                                Class.forName("org.postgresql.Driver");
-                                Connection con = DriverManager.getConnection (dburl,dbuser,dbpassword);
+                        Class.forName("org.postgresql.Driver");
+                        Connection con = DriverManager.getConnection (dburl,dbuser,dbpassword);
  
 /*                                SecureRandom salt = new SecureRandom();
                                 byte bytes[] = new byte[20];
                                 salt.nextBytes(bytes);
 */
 
-                                String computed_hash = PasswordUtil.hashPassword(password1);
+                        String computed_hash = PasswordUtil.hashPassword(password1);
+                                
+		    	String checkUser = "SELECT username from damauser where username=?";
+                        PreparedStatement ck = con.prepareStatement(checkUser);
+                        ck.clearParameters();
+                        ck.setString(1, username);
+                        ResultSet foundUser = ck.executeQuery();
+                        boolean exists = foundUser.next();
+                        
+                        if(!exists){
+
                                 
 		    		String query = "INSERT INTO damauser VALUES (?,?,?)";
 
@@ -96,19 +107,27 @@ public class NewUser extends HttpServlet {
 		    		ps.executeUpdate();
 
                                 log.debug("Created new User");
-                                
-                                response.sendRedirect("./success.html");
                                 con.close();
+                                response.sendRedirect("./success.html");
+                        }
+                        else{
+                                con.close();
+                                response.sendRedirect("./UserExists.html");
+                            
+                        }
+                        
+                        
                                 
 	    		} 
-	        catch (SQLException | ClassNotFoundException e) {
+
+	        catch (Exception e) {
 	        		e.printStackTrace();
-                                response.sendRedirect("./UserExists.html");
+                                response.sendRedirect("./failure.html");
 	        }
 
         }
         else {
-        		response.sendRedirect("./failure.html");
+        		response.sendRedirect("./ConfirmPassword.html");
         }
  //       response.sendRedirect("./success.html");
 	}

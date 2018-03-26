@@ -11,8 +11,9 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.Properties;
+import java.io.FileInputStream;
+import java.io.File;
 
 public class GetPropertyValues {
     
@@ -22,25 +23,29 @@ public class GetPropertyValues {
 	public String getPropValues(String myproperty) throws IOException {
  
             String result="";
-		try {
+//		try {
 			Properties prop = new Properties();
-			String propFileName = "config.properties";
+                        String catalina_path = System.getenv("CATALINA_HOME");
+			String propFileName = catalina_path + File.separator + "conf" + File.separator + "config.properties";
  
-			inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+//			inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+                        inputStream = new FileInputStream(propFileName);
  
 			if (inputStream != null) {
 				prop.load(inputStream);
 			} else {
 				throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+                                //should Log Error
 			}
  
 			// get the property value and print it out
 			result = prop.getProperty(myproperty);
                         inputStream.close();
  
-		} catch (Exception e) {
+/*		} catch (Exception e) {
 			System.out.println("Exception: " + e);
 		} 
+*/
 /*                finally {
 			inputStream.close();
 		}
