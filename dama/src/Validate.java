@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Validate {
-	public static boolean checkUser(String username, String password) throws ClassNotFoundException, SQLException {
+	public static boolean checkUser(String username, String password_candidate) throws ClassNotFoundException, SQLException {
 		boolean valid = false;
 		try {
 /*			Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -13,18 +13,29 @@ public class Validate {
 			String query = "SELECT USERNAME,PASS FROM USERS WHERE USERNAME=? AND PASS=?";
 */
             Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection ("jdbc:postgresql://localhost:5432/dama","postgres","ISA681DamaP!");
-            String query = "SELECT USERNAME,PASSWORD FROM USERS WHERE USERNAME=? AND PASSWORD=?";
-//TODO:
-// remove hardcoded credentials above
+
+		GetPropertyValues properties = new GetPropertyValues();
+		String dburl = properties.getPropValues("dburl");
+                String dbuser = properties.getPropValues("dbuser");
+                String dbpassword = properties.getPropValues("dbpassword");
+                Connection con = DriverManager.getConnection (dburl,dbuser,dbpassword);            
+
+//            String query = "SELECT USERNAME,PASSWORD FROM USERS WHERE USERNAME=? AND PASSWORD=?";
+              String query = "SELECT USERNAME,PASSWORD_HASH FROM damauser WHERE USERNAME=?";
+
+
             
             
 			PreparedStatement ps = con.prepareStatement(query);
 			ps.clearParameters();
 			ps.setString(1, username);
-			ps.setString(2, password);
+//			ps.setString(2, password_candidate);
 	        ResultSet rs = ps.executeQuery();
 	        valid = rs.next();
+                
+                String stored_hash = rs.getString("password_hash");
+                PasswordUtil.checkPassword(password_candidate, stored_hash);
+
 	        
 	        con.close();
 		}
