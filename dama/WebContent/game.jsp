@@ -13,13 +13,10 @@
         <link rel="stylesheet" href="style.css">
         <title>New Game JSP Page</title>
     </head>
-    <body>
+    <body onload='<jsp:include page="./NewGame.jsp"/>'>
         <h2>Let's play Dama!</h2>
         Player 1:	${sessionScope.username} <br/>
-        Player 2: 	${sessionScope.opponent}<br/>
-        <form name="EndGame" action="./EndGame" method="POST">
-			<input type="submit" value="End Current Game" name="endgame" />
-		</form>
+        Player 2:	
        
 		<div class="checker white_checker" style="display:none"> </div>
 		<div class="checker black_checker" style="display:none"> </div>
@@ -112,5 +109,20 @@
 			<div class="square black_square"> </div>
 			<div class="clear_float"> </div>
 		</div>
+		<% 
+			new Thread() {
+				public void run() {
+					try {
+						GameServer game = new GameServer();
+						game.newGame();
+						while (true) {
+							System.out.println("Waiting for opponent...");	
+						}
+					} catch(IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}.start();
+    		%>
     </body>
 </html>
