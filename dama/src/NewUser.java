@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 /**
  * Servlet implementation class NewUser
@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 @WebServlet("/NewUser")
 public class NewUser extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-        static Logger log = Logger.getLogger(NewUser.class);
+    //static Logger log = Logger.getLogger(NewUser.class);
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -106,7 +106,7 @@ public class NewUser extends HttpServlet {
 		    		ps.setString(3, computed_hash);
 		    		ps.executeUpdate();
 
-                                log.debug("Created new User");
+                                //log.debug("Created new User");
                                 con.close();
                                 response.sendRedirect("./success.html");
                         }
