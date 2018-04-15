@@ -1,4 +1,7 @@
+//todo//input validation on the username
+
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -7,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  * Servlet implementation class Login
@@ -14,6 +18,8 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/Login")
 public class Login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+        static Logger log = Logger.getLogger(Login.class);
+        static Connection con = null;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -42,15 +48,16 @@ public class Login extends HttpServlet {
 			if(Validate.checkUser(username, password)) {
 		        HttpSession session = request.getSession();  
 		        session.setAttribute("username", username);
-		        //Opponent player = new Opponent();
+                        //Opponent player = new Opponent();
 		        //player.newOpponent(username);
+                        
 				response.sendRedirect("./landing.jsp");
 			}
 			else {
 				response.sendRedirect("./failure.html");
 			}
 		} catch (ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
+                    log.debug("Login Error" + e);
 		}
 		doGet(request, response);
 	}
