@@ -1,10 +1,13 @@
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.apache.log4j.Logger;
 
 public class Validate {
+        static Logger log = Logger.getLogger(Validate.class);
+        static Connection con = null;
+    
 	public static boolean checkUser(String username, String password_candidate) throws ClassNotFoundException, SQLException {
 		boolean valid = false;
 		try {
@@ -12,16 +15,18 @@ public class Validate {
 			Connection con = DriverManager.getConnection ("jdbc:oracle:thin:@dama.cc0rojk8d4jm.us-east-1.rds.amazonaws.com:1521:dama","swe681","SWEpass123");
 			String query = "SELECT USERNAME,PASS FROM USERS WHERE USERNAME=? AND PASS=?";
 */
-            Class.forName("org.postgresql.Driver");
+ /*           Class.forName("org.postgresql.Driver");
 
 		GetPropertyValues properties = new GetPropertyValues();
 		String dburl = properties.getPropValues("dburl");
                 String dbuser = properties.getPropValues("dbuser");
                 String dbpassword = properties.getPropValues("dbpassword");
                 Connection con = DriverManager.getConnection (dburl,dbuser,dbpassword);            
-
+*/
+              con = ConnectionManager.getConnection();
+        
 //            String query = "SELECT USERNAME,PASSWORD FROM USERS WHERE USERNAME=? AND PASSWORD=?";
-              String query = "SELECT USERNAME,PASSWORD_HASH FROM damauser WHERE USERNAME=?";
+              String query = "SELECT USERNAME,PASSWORD_HASH FROM dama_user WHERE USERNAME=?";
 
 
             
@@ -39,8 +44,8 @@ public class Validate {
 	        
 	        con.close();
 		}
-		catch(Exception e) { 
-			e.printStackTrace();
+		catch(SQLException e) { 
+			log.error("Encountered Exception: " + e);
 		}
 		
 		return valid;
