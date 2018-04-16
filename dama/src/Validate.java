@@ -10,6 +10,7 @@ public class Validate {
     
 	public static boolean checkUser(String username, String password_candidate) throws ClassNotFoundException, SQLException {
 		boolean valid = false;
+                String stored_hash = "";
 		try {
 /*			Class.forName("oracle.jdbc.driver.OracleDriver");
 			Connection con = DriverManager.getConnection ("jdbc:oracle:thin:@dama.cc0rojk8d4jm.us-east-1.rds.amazonaws.com:1521:dama","swe681","SWEpass123");
@@ -26,7 +27,7 @@ public class Validate {
               con = ConnectionManager.getConnection();
         
 //            String query = "SELECT USERNAME,PASSWORD FROM USERS WHERE USERNAME=? AND PASSWORD=?";
-              String query = "SELECT USERNAME,PASSWORD_HASH FROM dama_user WHERE USERNAME=?";
+              String query = "SELECT USERNAME,PASSWORD_HASH FROM dama_user WHERE USERNAME=? ";
 
 
             
@@ -36,11 +37,11 @@ public class Validate {
 			ps.setString(1, username);
 //			ps.setString(2, password_candidate);
 	        ResultSet rs = ps.executeQuery();
-	        valid = rs.next();
                 
-                String stored_hash = rs.getString("password_hash");
-                PasswordUtil.checkPassword(password_candidate, stored_hash);
-
+                if(rs.next()){                                   
+                    stored_hash = rs.getString("password_hash");            
+                    valid = PasswordUtil.checkPassword(password_candidate, stored_hash);
+                }
 	        
 	        con.close();
 		}
