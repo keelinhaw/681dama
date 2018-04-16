@@ -1,3 +1,4 @@
+<%@page import="org.owasp.esapi.ESAPI"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
     import="java.sql.Connection,java.sql.DriverManager,java.sql.PreparedStatement,java.sql.ResultSet,com.server.GetPropertyValues,javax.servlet.http.HttpSession"%>
@@ -10,17 +11,17 @@
 </head>
 <body>
 <%
-	if(session.getAttribute("username") != null){
-
-	}
-	else {
+    String name = session.getAttribute("username").toString() ;
+    
+	if(name == null || name.equals("")){
+            name = "anonymous";
 	    String redirectURL = "./login.html";
 	    response.sendRedirect(redirectURL);
 	}
 %>
 <h1>Dama Landing Page</h1>
-<h2> don't forget to html encode the username being displayed</h2>
-Welcome ${sessionScope.username}
+
+Welcome  <%= ESAPI.encoder().encodeForHTMLAttribute(name) %>
 <br/><br/>
 <!--<button type="button" onclick="./NewGame">Play New Game</button>-->
 <form name="NewGame" action="./NewGame" method="POST">
@@ -81,10 +82,12 @@ Welcome ${sessionScope.username}
 	out.println("</ul>");
 %>
 </div>
-<form action="GameHistory.jsp" method="POST">
-<!--    <input type="text" name="username" value="${sessionScope.username}" /> -->
-    <input type="submit" value="View My Game History" name="gamehistory" />
+<form id="form1" action="./GameHistory" method="GET">
+   <input type="hidden" name="username" value="${sessionScope.username}" /> 
+<!--    <input type="submit" value="View My Game History" name="gamehistory"  /> -->
 </form>
+   <button type="submit" form="form1" >View My Game History</button>
+<br/>
 <br/>
 <form action="./Logout" method="post">
     <input type="submit" value="Logout" />
