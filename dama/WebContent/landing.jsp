@@ -14,6 +14,7 @@
     String name = session.getAttribute("username").toString() ;
     
 	if(name == null || name.equals("")){
+//todo//            name = ESAPI.User.ANONYMOUS;
             name = "anonymous";
 	    String redirectURL = "./login.html";
 	    response.sendRedirect(redirectURL);
