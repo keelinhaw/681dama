@@ -5,26 +5,33 @@ body , html{
 		margin : 0 0;
 		padding: 0  0;
 }
+.gameBoard {
+	font-family: 'Courier New', monospace;
+	font-size: 20px;
+}
 .square{
 	float: left;
 	width: 80px;
 	height: 80px;
 }
 
-.white_square{
-	background-color:#FFFFFF;
-}
-.black_square{
-	background-color :#000000;
+.yellow_square{
+	background-color:#FFF770;
+	border-style: solid;
 }
 .clear_float{
 	clear: both;
 }
 
 .table{
-	width: 640px;
-	height: 640px;
+	width: 700px;
+	height: 700px;
 	margin: 0 10;
+}
+.glowing-border:focus { 
+    outline: none;
+    border-color: #9ecaed;
+    box-shadow: 0 0 10px #9ecaed;
 }
 .score{
 	background-color: #1aaaad;
@@ -58,13 +65,12 @@ body , html{
 	width: 54px;
 	height: 54px;
 	border-radius: 50%;
-	position: absolute;
 	border: 4px solid white;
 	cursor: pointer;	
-
+	position: relative;
 }
 
-.white_checker{
+.red_checker{
 	background: #CC0000;
  -webkit-transition: 0.3s ease-in-out;
 	-moz-transition: 0.3s ease-in-out;
@@ -72,8 +78,8 @@ body , html{
   transition: 0.3s ease-in-out;
 }
 
-.black_checker{
-	background: #00001F;
+.blue_checker{
+	background: #3179ed;
  -webkit-transition: 0.3s ease-in-out;
 	-moz-transition: 0.3s ease-in-out;
   -o-transition: 0.3s ease-in-out;
