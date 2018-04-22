@@ -11,14 +11,17 @@
 </head>
 <body>
 <%
-    String name = session.getAttribute("username").toString() ;
     
-	if(name == null || name.equals("")){
-//todo//            name = ESAPI.User.ANONYMOUS;
-            name = "anonymous";
+    String name = "";
+    if(session.getAttribute("username") != null){
+        name = session.getAttribute("username").toString() ;
+	}
+	else {
 	    String redirectURL = "./login.html";
 	    response.sendRedirect(redirectURL);
 	}
+    
+ 
 %>
 <h1>Dama Landing Page</h1>
 
