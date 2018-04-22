@@ -1,17 +1,228 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Sign Up</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* Style all input fields */
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 6px;
+    margin-bottom: 16px;
+}
+
+/* Style the submit button */
+input[type=submit] {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* Style the container for inputs */
+.container {
+    background-color: #f1f1f1;
+    padding: 20px;
+}
+
+/* The message box is shown when the user clicks on the password field */
+#message {
+    display:none;
+    background: #f1f1f1;
+    color: #000;
+    position: relative;
+    padding: 20px;
+    margin-top: 10px;
+}
+
+#message p {
+    padding: 10px 35px;
+    font-size: 18px;
+}
+
+/* Add a green text color and a checkmark when the requirements are right */
+.valid {
+    color: green;
+}
+
+.valid:before {
+    position: relative;
+    left: -35px;
+    content: "+";
+}
+
+/* Add a red text color and an "x" when the requirements are wrong */
+.invalid {
+    color: red;
+}
+
+.invalid:before {
+    position: relative;
+    left: -35px;
+    content: "x";
+}
+
+/* The message box is shown when the user clicks on the password field */
+#confmessage {
+    display:none;
+    background: #f1f1f1;
+    color: #000;
+    position: relative;
+    padding: 20px;
+    margin-top: 10px;
+}
+
+#confmessage p {
+    padding: 10px 35px;
+    font-size: 18px;
+}
+
+</style>
 </head>
 <body>
-<h1>Welcome to Dama!</h1>
-<form action="./NewUser" method="post">
-	E-mail: <input type="text" name="email"><br>
-	Username: <input type="text" name="username"><br>
-	Password: <input type="password" name="password1"><br>
-	Re-enter Password: <input type="password" name="password2"><br>
-<input type="submit" value="Submit"><br/>
-</form>
+
+<h3>Welcome to Dama game</h3>
+<p>This is the login page</p>
+
+<div class="container">
+  <form action="./NewUser" method="post">
+    <label for="username">Username</label>
+    <input type="text" id="username" name="username" required>
+
+    <label for="email">Email</label>
+    <input type="text" id="email" name="email" pattern="^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,7}$" title="Must be valid email format" required>
+    
+       <label for="password1">Password</label>
+    <input type="password" id="password1" name="password1" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter,\n at least one special character ! @ # $ % ^ & * and be at least 8 or more characters" required>
+    
+           <label for="password2">Confirm Password</label>
+    <input type="password" id="password2" name="password2" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*]).{8,}" title="Must match above password" required>
+    
+   
+    <input type="submit" value="Submit">
+  </form>
+    
+    
+</div>
+
+<div id="message">
+  <h3>Password must contain the following:</h3>
+  <p id="letter" class="invalid">A <b>lowercase</b> letter</p>
+  <p id="capital" class="invalid">A <b>capital (uppercase)</b> letter</p>
+  <p id="number" class="invalid">A <b>number</b></p>
+  <p id="special" class="invalid">A <b>special</b></p>
+  <p id="length" class="invalid">Minimum <b>8 characters</b></p>
+</div>
+
+<div id="confmessage">
+    <h3>confirmation password must match password</h3>
+    <p id="matching" class="invalid"> <b>confirmation password must match password</b>  </p>
+</div>
+				
+<script>
+var myInput = document.getElementById("password1");
+var letter = document.getElementById("letter");
+var capital = document.getElementById("capital");
+var number = document.getElementById("number");
+var special = document.getElementById("special");
+var length = document.getElementById("length");
+var myPasswordConf = document.getElementById("password2");
+var matching = document.getElementById("matching");
+
+// When the user clicks on the confirmPassword field, show the message box
+myPasswordConf.onfocus = function(){
+//     var pass = document.getElementById("password1").value
+//        var confPass = document.getElementById("password2").value
+//        if(pass != confPass) {
+//            alert('Wrong confirm password !');
+//            document.getElementById("confmessage").style.display = "block";
+//        }
+        
+           document.getElementById("confmessage").style.display = "block";
+}
+// When the user clicks outside of the confirmPassword field, hide the message box
+myPasswordConf.onblur = function() {
+    document.getElementById("message").style.display = "none";
+}
+
+// When the user clicks on the password field, show the message box
+myInput.onfocus = function() {
+    document.getElementById("message").style.display = "block";
+}
+
+// When the user clicks outside of the password field, hide the message box
+myInput.onblur = function() {
+    document.getElementById("message").style.display = "none";
+}
+// When the user starts to type something inside the password field
+myPasswordConf.onkeyup = function() {
+        // Validate confirmation password
+  var passwd = document.getElementById("password1").value;
+  var conf = document.getElementById("password2").value;
+//  if(myPasswordConf.value.match("matchings")) {  
+    if(passwd == conf ){
+    matching.classList.remove("invalid");
+    matching.classList.add("valid");
+  } else {
+    matching.classList.remove("valid");
+    matching.classList.add("invalid");
+  }
+    
+}
+// When the user starts to type something inside the password field
+myInput.onkeyup = function() {
+  // Validate lowercase letters
+  var lowerCaseLetters = /[a-z]/g;
+  if(myInput.value.match(lowerCaseLetters)) {  
+    letter.classList.remove("invalid");
+    letter.classList.add("valid");
+  } else {
+    letter.classList.remove("valid");
+    letter.classList.add("invalid");
+  }
+  
+  // Validate capital letters
+  var upperCaseLetters = /[A-Z]/g;
+  if(myInput.value.match(upperCaseLetters)) {  
+    capital.classList.remove("invalid");
+    capital.classList.add("valid");
+  } else {
+    capital.classList.remove("valid");
+    capital.classList.add("invalid");
+  }
+
+  // Validate numbers
+  var numbers = /[0-9]/g;
+  if(myInput.value.match(numbers)) {  
+    number.classList.remove("invalid");
+    number.classList.add("valid");
+  } else {
+    number.classList.remove("valid");
+    number.classList.add("invalid");
+  }
+ 
+        // Validate special
+  var specials = /[!@#\$%\^&\*]/g;
+  if(myInput.value.match(specials)) {  
+    special.classList.remove("invalid");
+    special.classList.add("valid");
+  } else {
+    special.classList.remove("valid");
+    special.classList.add("invalid");
+  }
+  // Validate length
+  if(myInput.value.length >= 8) {
+    length.classList.remove("invalid");
+    length.classList.add("valid");
+  } else {
+    length.classList.remove("valid");
+    length.classList.add("invalid");
+  }
+  
+
+}
+</script>
+
 </body>
 </html>
