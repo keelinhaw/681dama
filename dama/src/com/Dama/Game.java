@@ -1,6 +1,13 @@
+package com.Dama;
 
 public class Game {
 	private long gameid;
+	private String player1;
+	private int player1score;
+	private String player2;
+	private int player2score;
+	private String playerturn;
+	private String errorstring;
 	private String a1;
 	private String a2;
 	private String a3;
@@ -74,6 +81,43 @@ public class Game {
 	public long getGameid() {
 		return gameid;
 	}
+	public void setPlayer1(String name) {
+		this.player1 = name;
+	}
+	public String getPlayer1() {
+		return player1;
+	}
+	public void setPlayer1score(int score) {
+		this.player1score = score;
+	}
+	public int getPlayer1score() {
+		return player1score;
+	}
+	public void setPlayer2(String name) {
+		this.player2 = name;
+	}
+	public String getPlayer2() {
+		return player2;
+	}
+	public void setPlayer2score(int score) {
+		this.player1score = score;
+	}
+	public int getPlayer2score() {
+		return player2score;
+	}
+	public void setPlayerturn(String name) {
+		this.playerturn = name;
+	}
+	public String getPlayerturn() {
+		return playerturn;
+	}
+	public void setErrorstring(String error) {
+		this.errorstring = error;
+	}
+	public String getErrorstring() {
+		return errorstring;
+	}
+	//Getters & Setters of board squares
 	public void setA1(String piece) {
 		this.a1 = piece;
 	}

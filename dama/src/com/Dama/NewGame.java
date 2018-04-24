@@ -1,3 +1,4 @@
+package com.Dama;
 
 
 import java.io.IOException;
@@ -45,8 +46,14 @@ public class NewGame extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-	        HttpSession session = request.getSession();  
+	        HttpSession session = request.getSession();
 	        String player1 = (String) session.getAttribute("username");
+	        
+	    		LoadGame game = new LoadGame();
+	    		Long gameid = game.newGame(player1);
+	    		Game gameBean = game.getGame(gameid);
+	        
+	        /*
 	        String status = "new";
         	
         		GetPropertyValues properties = new GetPropertyValues();
@@ -71,12 +78,13 @@ public class NewGame extends HttpServlet {
 	    		}
 	    		System.out.println("My generated key is: " + key);
 	    		con.close();
+	    		*/
+	       
 	    		
-	    		//response.setContentType("application/json");    
-	    		//PrintWriter out = response.getWriter();
-	    		
+	    		/*
 	    		Game gameBean = new Game();
 	    		gameBean.setGameid(key);
+	    		gameBean.setPlayer1(player1);
 	    		gameBean.setA1(" ");
 	    		gameBean.setA2(" ");
 	    		gameBean.setA3(" ");
@@ -141,16 +149,18 @@ public class NewGame extends HttpServlet {
 	    		gameBean.setH6(" ");
 	    		gameBean.setH7(" ");
 	    		gameBean.setH8(" ");
-
+	    		 */
 			//request.setAttribute("gameBean", gameBean);
 		    session.setAttribute("gameBean", gameBean);
-			javax.servlet.RequestDispatcher dispatcher = request.getRequestDispatcher("NewGame.jsp");
-			dispatcher.forward(request, response);
+		    response.sendRedirect("./NewGame.jsp");
+			//javax.servlet.RequestDispatcher dispatcher = request.getRequestDispatcher("NewGame.jsp");
+			//dispatcher.forward(request, response);
             //response.sendRedirect("./NewGame.jsp");                        
     		} 
         catch (Exception e) {
         		e.printStackTrace();
             response.sendRedirect("./failure.html");
         }
+
     }	
 }

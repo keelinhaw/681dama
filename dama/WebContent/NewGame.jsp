@@ -4,8 +4,8 @@
     Author     : Chadia
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"
-		import="com.server.GameServer,java.io.IOException"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
+		import="javax.servlet.http.HttpSession,com.Dama.Game,java.io.*,java.text.*,java.util.*" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -17,14 +17,41 @@
     </head>
     <body>
         <h2>Let's play Dama!</h2>
-        Player 1:	${sessionScope.username} <br/>
-        Player 2: 	${sessionScope.opponent} <br/><br/>
-        Game#: ${gameBean.gameid} 
+        <table>
+        		<tr width="300px">
+				<th>Player1 (O)</th>
+				<th>Player2 (X)</th>
+			</tr>
+			<tr>
+				<td>${gameBean.player1}</th>
+				<td>${gameBean.player2}</th>
+			</tr>
+		</table>
 		<div name="moves">
+		<%@ include file="checkturn.jsp" %>
 		<form action="./MyTurn" method="post">
-        		Piece from: <input type="text" name="oldLocation" /><br/>
-        		Piece to: <input type="text" name="newLocation" /><br/>
-        		<input type="submit" value="Submit" />
+			<%
+				String playerturn = gameBean.getPlayerturn();
+				String currentplayer = (String) session.getAttribute("username");
+		        //out.println("The currentplayer is: " + playerturn + "<br/>");
+		        //System.out.println("The playerturn is: " + playerturn);
+		        if(playerturn == null){
+		        		response.setIntHeader("Refresh", 2);
+		        		out.println("Waiting for player to join!");
+		        }
+		        else if(!currentplayer.equals(playerturn)){
+		        		response.setIntHeader("Refresh", 2);
+					out.println("Piece from: <input type=text name=oldLocation disabled/><br/>");
+					out.println("Piece to: <input type=text name=newLocation disabled/><br/>");
+					out.println("Piece to: <input type=submit value=Submit disabled/>");
+				}
+				else {
+					out.println("Piece from: <input type=text name=oldLocation /><br/>");
+					out.println("Piece to: <input type=text name=newLocation /><br/>");
+					out.println("Piece to: <input type=submit value=Submit />");
+				}
+        		%>
+        <div class=error>${gameBean.errorstring}</div>
         	</form>
         </div>
 		<div class="gameBoard">	
