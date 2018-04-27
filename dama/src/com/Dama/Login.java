@@ -1,13 +1,6 @@
 package com.Dama;
-
-
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,18 +9,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-
 /**
- * Servlet implementation class NewGame
+ * Servlet implementation class Login
  */
-@WebServlet("/NewGame")
-public class NewGame extends HttpServlet {
+@WebServlet("/Login")
+public class Login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public NewGame() {
+    public Login() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -44,21 +36,24 @@ public class NewGame extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
         try {
-	        HttpSession session = request.getSession();
-	        String player1 = (String) session.getAttribute("username");
-	        
-	    		LoadGame game = new LoadGame();
-	    		Long gameid = game.newGame(player1);
-	    		Game gameBean = game.getGame(gameid);
+			if(Validate.checkUser(username, password)) {
+		        HttpSession session = request.getSession();  
+		        session.setAttribute("username", username);
+		        //Opponent player = new Opponent();
+		        //player.newOpponent(username);
+				response.sendRedirect("./landing.jsp");
+			}
+			else {
+				response.sendRedirect("./failure.html");
+			}
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+		doGet(request, response);
+	}
 
-		    session.setAttribute("gameBean", gameBean);
-		    response.sendRedirect("./NewGame.jsp");                     
-    		} 
-        catch (Exception e) {
-        		e.printStackTrace();
-            response.sendRedirect("./failure.html");
-        }
-
-    }	
 }

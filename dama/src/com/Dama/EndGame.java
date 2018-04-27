@@ -2,13 +2,6 @@ package com.Dama;
 
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -16,18 +9,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.server.GameServer;
 
 /**
- * Servlet implementation class NewGame
+ * Servlet implementation class EndGame
  */
-@WebServlet("/NewGame")
-public class NewGame extends HttpServlet {
+@WebServlet("/EndGame")
+public class EndGame extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public NewGame() {
+    public EndGame() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -44,21 +38,11 @@ public class NewGame extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try {
-	        HttpSession session = request.getSession();
-	        String player1 = (String) session.getAttribute("username");
-	        
-	    		LoadGame game = new LoadGame();
-	    		Long gameid = game.newGame(player1);
-	    		Game gameBean = game.getGame(gameid);
+		GameServer game = new GameServer();
+		game.newGame();
+		HttpSession session = request.getSession();
+		session.setAttribute("game", game);
+		doGet(request, response);
+	}
 
-		    session.setAttribute("gameBean", gameBean);
-		    response.sendRedirect("./NewGame.jsp");                     
-    		} 
-        catch (Exception e) {
-        		e.printStackTrace();
-            response.sendRedirect("./failure.html");
-        }
-
-    }	
 }

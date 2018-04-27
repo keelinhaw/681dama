@@ -86,11 +86,12 @@ public class LoadGame {
 	public Game getGame(Long gameid) {
 		
 		String player1 = "";
-		int player1score = 0;
 		String player2 = "";
-		int player2score = 0;
 		String playerturn = "";
 		String errorString = "";
+		String gamestatus = "";
+		String win = "";
+		String loss = "";
 		Game gameBean = new Game();
 		try {
 	    		GetPropertyValues properties = new GetPropertyValues();
@@ -99,7 +100,7 @@ public class LoadGame {
 	    		String dbpassword = properties.getPropValues("dbpassword");
 	    	    Class.forName("org.postgresql.Driver");
 	    	    Connection con = DriverManager.getConnection (dburl,dbuser,dbpassword);
-		    String query = "SELECT player1, player1_score, player2, player2_score, playerturn, error_message FROM games WHERE id=?";
+		    String query = "SELECT player1, player2, playerturn, error_message, status, win, loss FROM games WHERE id=?";
 		    PreparedStatement ps = con.prepareStatement(query);
 			ps = con.prepareStatement(query);
 			ps.clearParameters();
@@ -107,19 +108,21 @@ public class LoadGame {
 			ResultSet game = ps.executeQuery();
 		    if (game.next()) {
 		    		player1 = game.getString("player1");
-		    		player1score = game.getInt("player1_score");
 		        player2 = game.getString("player2");
-		        player2score = game.getInt("player2_score");
 		        playerturn = game.getString("playerturn");
 		        errorString = game.getString("error_message");
+		        gamestatus = game.getString("status");
+		        win = game.getString("win");
+		        loss = game.getString("loss");
 		    }
 			gameBean.setGameid(gameid);
 			gameBean.setPlayer1(player1);
-			gameBean.setPlayer1score(player1score);
 			gameBean.setPlayer2(player2);
-			gameBean.setPlayer1score(player2score);
 			gameBean.setPlayerturn(playerturn);
 			gameBean.setErrorstring(errorString);
+			gameBean.setGamestatus(gamestatus);
+			gameBean.setWin(win);
+			gameBean.setLoss(loss);
 			gameBean.setA1(" ");
 			gameBean.setA2(" ");
 			gameBean.setA3(" ");
