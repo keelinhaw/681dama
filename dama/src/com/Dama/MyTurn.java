@@ -150,9 +150,6 @@ public class MyTurn extends HttpServlet {
 			else {
 				//Check if player if moving left or right
 				if(xOld == xNew) {
-					//System.out.println("X coordinates match, trying to move left or right.");
-					//System.out.println("xOld: " + xOld + " | xNew: " + xNew + " | yOld: " + yOld + " | yNew: " + yNew);
-					//Check if piece is just moving 1 space
 					if(yOld+1 == yNew || yOld-1 == yNew) {
 						String spacePiece = "";
 			            try {
