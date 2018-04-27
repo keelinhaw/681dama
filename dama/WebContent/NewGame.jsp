@@ -27,33 +27,41 @@
 				<td>${gameBean.player2}</th>
 			</tr>
 		</table>
+		<br/>
 		<div name="moves">
 		<%@ include file="checkturn.jsp" %>
-		<form action="./MyTurn" method="post">
-			<%
+		<form action="./MyTurn" method="POST">
+		<%
 				String playerturn = gameBean.getPlayerturn();
+				String gamestatus = gameBean.getGamestatus();
+				String winner = gameBean.getWin();
 				String currentplayer = (String) session.getAttribute("username");
 		        //out.println("The currentplayer is: " + playerturn + "<br/>");
 		        //System.out.println("The playerturn is: " + playerturn);
-		        if(playerturn == null){
+		        if(gamestatus.equals("new")){
 		        		response.setIntHeader("Refresh", 2);
-		        		out.println("Waiting for player to join!");
+		        		out.println("Waiting for player to join!<div class=loader></div>");
 		        }
-		        else if(!currentplayer.equals(playerturn)){
-		        		response.setIntHeader("Refresh", 2);
-					out.println("Piece from: <input type=text name=oldLocation disabled/><br/>");
-					out.println("Piece to: <input type=text name=newLocation disabled/><br/>");
-					out.println("Piece to: <input type=submit value=Submit disabled/>");
-				}
-				else {
-					out.println("Piece from: <input type=text name=oldLocation /><br/>");
-					out.println("Piece to: <input type=text name=newLocation /><br/>");
-					out.println("Piece to: <input type=submit value=Submit />");
-				}
+		        else if (gamestatus.equals("complete") || gamestatus.equals("forfeit")) {
+		        		out.println("Game is over! " + winner + " won the game!");
+		        }
+		        else {
+			        if(!currentplayer.equals(playerturn)){
+			        		response.setIntHeader("Refresh", 2);
+						out.println("Piece from: <input type=text name=oldLocation disabled/>");
+						out.println("Piece to: <input type=text name=newLocation disabled/><br/>");
+						out.println("<input type=submit value=Submit disabled/>");
+					}
+					else {
+						out.println("Piece from: <input type=text name=oldLocation />");
+						out.println("Piece to: <input type=text name=newLocation /></br>");
+						out.println("<input type=submit value=Submit />");
+					}
+		        }
         		%>
         <div class=error>${gameBean.errorstring}</div>
         	</form>
-        </div>
+        </div><br/>
 		<div class="gameBoard">	
 &nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;3&nbsp;&nbsp;&nbsp;4&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;6&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;8</br>		
 &nbsp;&nbsp;-------------------------------</br>
@@ -74,5 +82,13 @@ G|&nbsp;${gameBean.g1}&nbsp;|&nbsp;${gameBean.g2}&nbsp;|&nbsp;${gameBean.g3}&nbs
 H|&nbsp;${gameBean.h1}&nbsp;|&nbsp;${gameBean.h2}&nbsp;|&nbsp;${gameBean.h3}&nbsp;|&nbsp;${gameBean.h4}&nbsp;|&nbsp;${gameBean.h5}&nbsp;|&nbsp;${gameBean.h6}&nbsp;|&nbsp;${gameBean.h7}&nbsp;|&nbsp;${gameBean.h8}&nbsp;|</br>
 &nbsp;&nbsp;-------------------------------	</br>
 		</div>
+		<%
+			if(gamestatus.equals("complete") || gamestatus.equals("forfeit")){
+				out.println("<h2>Game Moves</h2>");
+		%>
+				<%@ include file="showmoves.jsp" %>
+		<%
+			}
+		%>
     </body>
 </html>
