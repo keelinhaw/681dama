@@ -84,16 +84,14 @@ public class MyTurn extends HttpServlet {
 		        }
 	            if (playerturn.equals(player1)) {
 		        		gameBean.setPlayerturn(player2);
-		        		updateMove(piece, oldLocation, newLocation, player2, gameid);
+		        		updateMove(piece, oldLocation, newLocation, player1, player2, gameid);
 		        }
 		        else {
 		        		gameBean.setPlayerturn(player1);
-		        		updateMove(piece, oldLocation, newLocation, player1, gameid);
+		        		updateMove(piece, oldLocation, newLocation, player2, player1, gameid);
 		        }
         		}
-        		if(checkWon(newLocale)) {
-        			
-        		}
+        		checkWon(newLocale, player1, player2, playerturn, gameid);
         }
         saveError(gameid);
         session.setAttribute("gameBean", gameBean);
@@ -446,14 +444,39 @@ public class MyTurn extends HttpServlet {
 		}
 		return true;
 	}
-	public boolean checkWon (String newLocale) {
+	public boolean checkWon (String newLocale, String player1, String player2, String playerturn, Long gameid) {
 		if (newLocale.substring(0, 1).equals("A") || newLocale.substring(0, 1).equals("H")) {
+			String opponent = "";
+            if (playerturn.equals(player1)) {
+            		opponent = player2;
+	        }
+	        else {
+	        		opponent = player1;
+	        }
+			try {
+				GetPropertyValues properties = new GetPropertyValues();
+				String dburl = properties.getPropValues("dburl");
+				String dbuser = properties.getPropValues("dbuser");
+				String dbpassword = properties.getPropValues("dbpassword");
+			    Connection con = DriverManager.getConnection (dburl,dbuser,dbpassword);
+
+			    String updateGameboard = "UPDATE games SET status=?, win=?, loss=? WHERE id=?";
+			    PreparedStatement ps = con.prepareStatement(updateGameboard);
+			    ps.setString(1, "complete");
+			    ps.setString(2, playerturn);
+			    ps.setString(3, opponent);
+			    ps.setLong(4, gameid);
+			    ps.executeUpdate();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 			System.out.println("The game is finished!");
 			return true;
 		}
 		return false;
 	}
-	public void updateMove (String piece, String oldLocale, String newLocale, String playerturn, Long gameid) {
+	public void updateMove (String piece, String oldLocale, String newLocale, String playermove, String playerturn, Long gameid) {
 		try {
 	        String oldLocation = oldLocale.toLowerCase();
 	        String newLocation = newLocale.toLowerCase();
@@ -483,6 +506,14 @@ public class MyTurn extends HttpServlet {
 		    ps = con.prepareStatement(turn);
 		    ps.setString(1, playerturn);
 		    ps.setLong(2, gameid);
+		    ps.executeUpdate();
+		    
+		    String move = "INSERT INTO game_moves (id, player, oldlocale, newlocale) VALUES (?,?,?,?)";
+		    ps = con.prepareStatement(move);
+		    ps.setLong(1, gameid);
+		    ps.setString(2, playermove);
+		    ps.setString(3, oldLocale);
+		    ps.setString(4, newLocale);
 		    ps.executeUpdate();
     			con.close();
 		}
