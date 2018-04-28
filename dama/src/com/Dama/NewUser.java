@@ -145,6 +145,13 @@ public class NewUser extends HttpServlet {
 		    		ps.setString(2, cleaned_email);
 		    		ps.setString(3, computed_hash);
 		    		ps.executeUpdate();
+		    		query = "INSERT INTO user_statistics VALUES (?,?,?)";
+		    		ps = con.prepareStatement(query);
+		    		ps.clearParameters();
+                ps.setString(1, cleaned_username);
+		    		ps.setInt(2, 0);
+		    		ps.setInt(3, 0);
+		    		ps.executeUpdate();
 
                                 log.debug("Created new User");
                                 con.close();
