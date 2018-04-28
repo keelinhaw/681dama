@@ -1,0 +1,50 @@
+@charset "UTF-8";
+
+body , html{
+	transition: 1s ease-in-out;
+	margin : 0 0;
+	padding: 0  0;
+	margin-left: 10px;
+}
+.error {
+	color: red;
+}
+.gameBoard {
+	font-family: 'Courier New', monospace;
+	font-size: 20px;
+	background: #f1f1f1;
+    width: 420px;
+    padding: 20px;
+
+.table{
+	width: 700px;
+	height: 700px;
+	margin: 0 10;
+}
+input[type=submit] {
+    background-color: #4CAF50;
+    color: white;
+}
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: #111;
+}
