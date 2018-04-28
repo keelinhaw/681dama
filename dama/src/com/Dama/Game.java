@@ -3,11 +3,12 @@ package com.Dama;
 public class Game {
 	private long gameid;
 	private String player1;
-	private int player1score;
 	private String player2;
-	private int player2score;
 	private String playerturn;
 	private String errorstring;
+	private String gamestatus;
+	private String win;
+	private String loss;
 	private String a1;
 	private String a2;
 	private String a3;
@@ -87,23 +88,11 @@ public class Game {
 	public String getPlayer1() {
 		return player1;
 	}
-	public void setPlayer1score(int score) {
-		this.player1score = score;
-	}
-	public int getPlayer1score() {
-		return player1score;
-	}
 	public void setPlayer2(String name) {
 		this.player2 = name;
 	}
 	public String getPlayer2() {
 		return player2;
-	}
-	public void setPlayer2score(int score) {
-		this.player1score = score;
-	}
-	public int getPlayer2score() {
-		return player2score;
 	}
 	public void setPlayerturn(String name) {
 		this.playerturn = name;
@@ -116,6 +105,24 @@ public class Game {
 	}
 	public String getErrorstring() {
 		return errorstring;
+	}
+	public void setGamestatus(String status) {
+		this.gamestatus = status;
+	}
+	public String getGamestatus() {
+		return gamestatus;
+	}
+	public void setWin(String win) {
+		this.win = win;
+	}
+	public String getWin() {
+		return win;
+	}
+	public void setLoss(String loss) {
+		this.loss = loss;
+	}
+	public String getLoss() {
+		return loss;
 	}
 	//Getters & Setters of board squares
 	public void setA1(String piece) {
