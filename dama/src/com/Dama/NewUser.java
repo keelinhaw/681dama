@@ -1,14 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.Dama;
-
-/**
- *
- * @author Chadia
- */
 //TODO list added by Chadia
 //done// should present user-friendly message when password1 and password2 are not equal
 //done// should present user-friendly message when username already exist in DB (should not wait for SQL exception)
@@ -119,32 +109,29 @@ public class NewUser extends HttpServlet {
                         PreparedStatement ck = con.prepareStatement(checkUser);
                         ck.clearParameters();
                         ck.setString(1, cleaned_username);
-                         log.debug("Executing query to check if user already exists"); 
+                        log.debug("Executing query to check if user already exist"); 
                         ResultSet foundUser = ck.executeQuery();
-                        boolean userExists = foundUser.next();
-
-//todo// also check if email already exists to avoid unique constraint violation exception
-
-		    	String checkEmail = "SELECT email from dama_user where email=?";
-                        PreparedStatement cke = con.prepareStatement(checkEmail);
-                        cke.clearParameters();
-                        cke.setString(1, cleaned_email);
-                         log.debug("Executing query to check if email already exists"); 
-                        ResultSet foundEmail = cke.executeQuery();
-                        boolean emailExists = foundEmail.next();
-
-
-                        if(!userExists && !emailExists){
+                        boolean exists = foundUser.next();
+                        
+                        if(!exists){
 
                                 
 		    		String query = "INSERT INTO dama_user VALUES (?,?,?)";
 
 		    		PreparedStatement ps = con.prepareStatement(query);
 		    		ps.clearParameters();
-                                ps.setString(1, cleaned_username);
+                ps.setString(1, cleaned_username);
 		    		ps.setString(2, cleaned_email);
 		    		ps.setString(3, computed_hash);
 		    		ps.executeUpdate();
+		    		query = "INSERT INTO user_statistics VALUES (?,?,?)";
+		    		ps = con.prepareStatement(query);
+		    		ps.clearParameters();
+                ps.setString(1, cleaned_username);
+		    		ps.setInt(2, 0);
+		    		ps.setInt(3, 0);
+		    		ps.executeUpdate();
+		   
 
                                 log.debug("Created new User");
                                 con.close();
@@ -197,4 +184,3 @@ public class NewUser extends HttpServlet {
         
 	}
 }
-
