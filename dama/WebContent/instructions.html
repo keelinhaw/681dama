@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>How To Play</title>
+<style>
+input {
+	width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 6px;
+    margin-bottom: 16px;
+}
+
+/* Style the submit button */
+input[type=submit] {
+    background-color: #4CAF50;
+    color: white;
+}
+input[type=submit]:hover {
+    background-color: #63d368;
+}
+button.logout {
+     background:none;
+     color:white;
+     border:none; 
+     font: inherit;
+     cursor: pointer;
+     text-align: center;
+     padding: 14px 16px;
+}
+button {
+    background-color: #4CAF50;
+    color: white;
+    	width: 50%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+button:hover {
+    background-color: #63d368;
+}
+ul.nav {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+li.nav {
+    float: left;
+}
+li.nav a.nav {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+</style>
+</head>
+<body>
+<h2>How To Play Dama</h2>
+<ul class=nav>
+  <li class=nav><a class=nav href="landing.jsp">Home</a></li>
+  <li class=nav><a class=nav href="GameHistory.jsp">Game History</a></li>
+  <li class=nav><a class=nav href="gamestatistics.jsp">Game Statistics</a></li>
+  <li class=nav><a class=nav href="instructions.html">How To Play</a></li>
+  <li class=nav style="float:right"><form action=./Logout method=post><button class=logout type=submit name=logout>Logout</button></form></li>
+</ul class=nav>
+
+</body>
+</html>

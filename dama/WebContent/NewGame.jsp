@@ -13,10 +13,75 @@
         <script src="./jquery-3.2.1.js" type="text/javascript"></script>
         <link href="https://fonts.googleapis.com/css?family=+Mono" rel="stylesheet">
         <link rel="stylesheet" href="style.css">
-        <title>New Game JSP Page</title>
+        <title>Dama</title>
+                <style>
+input {
+	width: 120px;
+    padding: 4px;
+    border: 1px solid #ccc;
+	border-radius: 4px;
+    box-sizing: border-box;
+    margin-bottom: 4px;
+}
+
+/* Style the submit button */
+input[type=submit] {
+    background-color: #4CAF50;
+    color: white;
+}
+input[type=submit]:hover {
+    background-color: #63d368;
+}
+button.logout {
+     background:none;
+     color:white;
+     border:none; 
+     font: inherit;
+     cursor: pointer;
+     text-align: center;
+     padding: 14px 16px;
+}
+ul.nav {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+li.nav {
+    float: left;
+}
+li.nav a.nav {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+table, td, th {    
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    padding: 6px;
+}
+</style>
     </head>
     <body>
         <h2>Let's play Dama!</h2>
+        <ul class=nav>
+		  <li class=nav><a class=nav href="landing.jsp">Home</a></li>
+		  <li class=nav><a class=nav href="GameHistory.jsp">Game History</a></li>
+		  <li class=nav><a class=nav href="gamestatistics.jsp">Game Statistics</a></li>
+		  <li class=nav><a class=nav href="instructions.html">How To Play</a></li>
+		  <li class=nav style="float:right"><form action=./Logout method=post><button class=logout type=submit name=logout>Logout</button></form></li>
+		</ul class=nav>
         <table>
         		<tr width="300px">
 				<th>Player1 (O)</th>
@@ -35,31 +100,33 @@
 				String playerturn = gameBean.getPlayerturn();
 				String gamestatus = gameBean.getGamestatus();
 				String winner = gameBean.getWin();
+				String errorstring = gameBean.getErrorstring();
 				String currentplayer = (String) session.getAttribute("username");
 		        //out.println("The currentplayer is: " + playerturn + "<br/>");
 		        //System.out.println("The playerturn is: " + playerturn);
 		        if(gamestatus.equals("new")){
 		        		response.setIntHeader("Refresh", 2);
-		        		out.println("Waiting for player to join!<div class=loader></div>");
+		        		out.println("<center><i>Waiting for player to join!</i></center>");
 		        }
 		        else if (gamestatus.equals("complete") || gamestatus.equals("forfeit")) {
-		        		out.println("Game is over! " + winner + " won the game!");
+		        		out.println("<center><i>Game is over! " + winner + " won the game!</i></center>");
 		        }
 		        else {
 			        if(!currentplayer.equals(playerturn)){
 			        		response.setIntHeader("Refresh", 2);
-						out.println("Piece from: <input type=text name=oldLocation disabled/>");
-						out.println("Piece to: <input type=text name=newLocation disabled/><br/>");
-						out.println("<input type=submit value=Submit disabled/>");
+			        		out.println("<center><i>Waiting for " + playerturn + " to make a move!</i></center>");
 					}
 					else {
-						out.println("Piece from: <input type=text name=oldLocation />");
-						out.println("Piece to: <input type=text name=newLocation /></br>");
-						out.println("<input type=submit value=Submit />");
+						out.println("<center>");
+						out.println("Piece from: <input type=text name=oldLocation pattern='[A-Ha-h][1-8]' placeholder='[row][column]' required/>");
+						out.println("Piece to: <input type=text name=newLocation pattern='[A-Ha-h][1-8]' placeholder='[row][column]' required/>");
+						out.println("<input type=submit value=Submit /><br/>");
+						out.println("<div class=error>" + errorstring + "</div>");
+						out.println("</center>");
 					}
 		        }
         		%>
-        <div class=error>${gameBean.errorstring}</div>
+        <%-- <div class=error>${gameBean.errorstring}</div> --%>
         	</form>
         </div><br/>
 		<div class="gameBoard">	

@@ -9,7 +9,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Game History</title>
+        <title>Game Statistics</title>
         <style>
 input {
 	width: 120px;
@@ -69,12 +69,6 @@ th, td {
     padding: 15px;
 }
 </style>
-<script>
-function loadGame(event){
-    console.log('td clicked'); 
-    event.stopPropagation()
-};
-</script>
     </head>
     <body>
     <%
@@ -83,7 +77,7 @@ function loadGame(event){
 	    response.sendRedirect(redirectURL);
 	}
 	%>
-    <h2>Game History</h2>
+    <h2>Game Statistics</h2>
     <ul class=nav>
 		  <li class=nav><a class=nav href="landing.jsp">Home</a></li>
 		  <li class=nav><a class=nav href="GameHistory.jsp">Game History</a></li>
@@ -101,22 +95,16 @@ function loadGame(event){
 	String dbpassword = properties.getPropValues("dbpassword");
   	Connection con = DriverManager.getConnection (dburl,dbuser,dbpassword);
 
-	String findcompletedgames = "SELECT id, startdate, player1, player2, win FROM games WHERE (status=? OR status=?) AND (player1=? OR player2=?)";
-	PreparedStatement ps = con.prepareStatement(findcompletedgames);
-	ps.setString(1, "complete");
-	ps.setString(2, "forfeit");
-	ps.setString(3, myusername);
-	ps.setString(4, myusername);
+	String getstatistics = "SELECT username, win, loss FROM user_statistics";
+	PreparedStatement ps = con.prepareStatement(getstatistics);
 	ResultSet completedgames = ps.executeQuery();
 	//Print table header
-	out.println("<table><tr><th>Date</th><th>Player1</th><th>Player2</th><th>Winner</th><th>Game</th></tr>");
+	out.println("<table><tr><th>Username</th><th>Wins</th><th>Losses</th></tr>");
 	while (completedgames.next()) {
 		out.println("<tr>");
-		out.println("<td>" + completedgames.getString("startdate") + "</td>");
-		out.println("<td>" + completedgames.getString("player1") + "</td>");
-		out.println("<td>" + completedgames.getString("player2") + "</td>");
+		out.println("<td>" + completedgames.getString("username") + "</td>");
 		out.println("<td>" + completedgames.getString("win") + "</td>");
-		out.println("<td><form action=./ReturnToGame method=post><button type=submit name=gameid value=" + completedgames.getString("id") + ">View Game</button></form></td>");
+		out.println("<td>" + completedgames.getString("loss") + "</td>");
 		out.println("</tr>");
 	}
 	out.println("<table>");
