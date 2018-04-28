@@ -5,6 +5,12 @@ package com.Dama;
  * and open the template in the editor.
  */
 
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -12,31 +18,34 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-//import org.apache.log4j.Logger;
+import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Chadia
  */
+@WebServlet("/GameHistory")
 public class GameHistory extends HttpServlet {
 
     
-        //static Logger log = Logger.getLogger(GameHistory.class);
+        static Logger log = Logger.getLogger(GameHistory.class);
         static Connection con = null;
     
                 
-                public ResultSet GetUserHistory( String username){
-                
+                public ResultSet GetUserHistory(String username ){
+              
                     ResultSet resultSet = null;
                     PreparedStatement ps = null;
                     String query = "SELECT player1, startdate FROM history where player1 = ?";
 
                 try {
                     
-                    //con = ConnectionManager.getConnection();
+                    con = ConnectionManager.getConnection();
                         
                  ps = con.prepareStatement(query);
 		    ps.clearParameters();
@@ -44,7 +53,7 @@ public class GameHistory extends HttpServlet {
                     resultSet =  ps.executeQuery();
 
                     } catch (SQLException e) {
-                        //log.error("Encountered SQL error in GameHistory " + e);
+                        log.error("Encountered SQL error in GameHistory " + e);
                     }                    
                 
                     return resultSet;
@@ -87,9 +96,11 @@ public class GameHistory extends HttpServlet {
       out.write("    </head>\n");
       out.write("    <body>\n");
       out.write("        \n");
-      
+   
+      	        HttpSession session = request.getSession();                      
+	        String username = (String) session.getAttribute("username");  
  //     String username = session.getAttribute("username")
-       String username = request.getParameter("username");
+ //      String username = request.getParameter("username");
 
 	if(username == null){
 	    String redirectURL = "./login.html";
@@ -136,11 +147,18 @@ public class GameHistory extends HttpServlet {
       out.write("\n");
       out.write("                </tbody>\n");
       out.write("            </table>\n");
-      out.write("\n");
+      out.write("<br/>");
+      out.write("<br/>");
+      out.write("<br/>");    
+     
+      out.write(" <form action=\"./Logout\" method=\"post\">\n");
+      out.write("<input type=\"submit\" value=\"Logout\" />\n");
+      out.write("</form>");
+      
       out.write("    </body>\n");
       out.write("</html>\n");
         }   catch (SQLException ex) {
-               // log.error( "Encountered SQL error in GameHistory " + ex);
+                log.error( "Encountered SQL error in GameHistory " + ex);
             }
     }
     
