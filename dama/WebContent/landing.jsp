@@ -1,7 +1,7 @@
 <%@page import="org.owasp.esapi.ESAPI"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
-    import="java.sql.Connection,java.sql.DriverManager,java.sql.PreparedStatement,java.sql.ResultSet,com.server.GetPropertyValues,javax.servlet.http.HttpSession"%>
+    import="java.sql.Connection,java.sql.DriverManager,java.sql.PreparedStatement,java.sql.ResultSet,com.Dama.GetPropertyValues,javax.servlet.http.HttpSession"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
