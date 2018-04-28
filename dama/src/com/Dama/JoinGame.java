@@ -55,15 +55,13 @@ public class JoinGame extends HttpServlet {
 	        Connection con = DriverManager.getConnection (dburl,dbuser,dbpassword);
 	        
 	        //update games table with player2
-	    		String newGame = "UPDATE games SET player1_score=?,player2=?,player2_score=?,playerturn=?,status=? WHERE id=?";
+	    		String newGame = "UPDATE games SET player2=?,playerturn=?,status=? WHERE id=?";
 	    		PreparedStatement ps = con.prepareStatement(newGame);
 	    		ps.clearParameters();
-	    		ps.setInt(1, 0);
+	    		ps.setString(1, player2);
 	    		ps.setString(2, player2);
-	    		ps.setInt(3, 0);
-	    		ps.setString(4, player2);
-	    		ps.setString(5, status);
-	    		ps.setLong(6, Long.parseLong(gameid));
+	    		ps.setString(3, status);
+	    		ps.setLong(4, Long.parseLong(gameid));
 	    		ps.executeUpdate();
 		}
         catch (Exception e) {
