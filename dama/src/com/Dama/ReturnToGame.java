@@ -41,7 +41,7 @@ public class ReturnToGame extends HttpServlet {
                 
                 
             try {
-                String cleaned_gameid = ESAPI.validator().getValidInput("SignupPage_GameIdField",gameid,
+                String cleaned_gameid = ESAPI.validator().getValidInput("ReturnToGameInput_fromLandingPage_GameIdField",gameid,
                         "GameID", // regex spec
                         max_length, // max lengyh
                         false, // no nulls
