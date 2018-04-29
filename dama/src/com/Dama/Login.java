@@ -12,7 +12,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.log4j.Logger;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Randomizer;
 import org.owasp.esapi.User;
@@ -26,7 +28,8 @@ import org.owasp.esapi.errors.ValidationException;
 @WebServlet("/Login")
 public class Login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-        static Logger log = Logger.getLogger(Login.class);
+//        static Logger log = Logger.getLogger(Login.class);
+         private static final Logger log = LogManager.getLogger(Login.class);
         static Connection con = null;
         static int password_max_length = 16;
         static int username_max_length = 20;
