@@ -102,26 +102,33 @@ th, td {
 				String winner = gameBean.getWin();
 				String errorstring = gameBean.getErrorstring();
 				String currentplayer = (String) session.getAttribute("username");
-		        //out.println("The currentplayer is: " + playerturn + "<br/>");
-		        //System.out.println("The playerturn is: " + playerturn);
 		        if(gamestatus.equals("new")){
 		        		response.setIntHeader("Refresh", 2);
 		        		out.println("<center><i>Waiting for player to join!</i></center>");
 		        }
 		        else if (gamestatus.equals("complete") || gamestatus.equals("forfeit")) {
-		        		out.println("<center><i>Game is over! " + winner + " won the game!</i></center>");
+		        		if (gamestatus.equals("complete")){
+		        			out.println("<center><i>Game is over! " + winner + " won the game!</i></center>");
+		        		}
+		        		if (gamestatus.equals("forfeit")){
+		        			out.println("<center><i>Game is over because of forfeit! " + winner + " won the game!</i></center>");
+		        		}
 		        }
 		        else {
 			        if(!currentplayer.equals(playerturn)){
+			        		gameBean.checkForfeit();
 			        		response.setIntHeader("Refresh", 2);
 			        		out.println("<center><i>Waiting for " + playerturn + " to make a move!</i></center>");
 					}
 					else {
+						response.setIntHeader("Refresh", 64);
 						out.println("<center>");
 						out.println("Piece from: <input type=text name=oldLocation pattern='[A-Ha-h][1-8]' placeholder='[row][column]' required/>");
 						out.println("Piece to: <input type=text name=newLocation pattern='[A-Ha-h][1-8]' placeholder='[row][column]' required/>");
 						out.println("<input type=submit value=Submit /><br/>");
-						out.println("<div class=error>" + errorstring + "</div>");
+						if(errorstring != null){
+							out.println("<div class=error>" + errorstring + "</div>");
+						}
 						out.println("</center>");
 					}
 		        }
