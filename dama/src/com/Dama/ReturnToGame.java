@@ -56,8 +56,7 @@ public class ReturnToGame extends HttpServlet {
                 response.sendRedirect("./failure.html");
             } catch (IntrusionException ex) {
                 Logger.getLogger(ReturnToGame.class.getName()).log(Level.SEVERE, null, ex);
-
-                log.error("Encounter Intrusion Attempt in NewUser : " + ex );
+//                Potential Intrusion Attempt
                 //if valid user, then lock the user's account. If user loggedin invalidate session
                 session.invalidate();
                 response.sendRedirect("./failure.html");
