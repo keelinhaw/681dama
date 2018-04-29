@@ -46,19 +46,24 @@ public class ReturnToGame extends HttpServlet {
                         max_length, // max lengyh
                         false, // no nulls
                         true); // canonicalize
+                
+                Game gameBean = game.getGame(Long.parseLong(gameid));
+		session.setAttribute("gameBean", gameBean);
+                response.sendRedirect("./NewGame.jsp");
+                
             } catch (ValidationException ex) {
                 Logger.getLogger(ReturnToGame.class.getName()).log(Level.SEVERE, null, ex);
+                response.sendRedirect("./failure.html");
             } catch (IntrusionException ex) {
                 Logger.getLogger(ReturnToGame.class.getName()).log(Level.SEVERE, null, ex);
 
                 log.error("Encounter Intrusion Attempt in NewUser : " + ex );
-                                //if valid user, then lock the user's account. If user loggedin invalidate session
-                                session.invalidate();
+                //if valid user, then lock the user's account. If user loggedin invalidate session
+                session.invalidate();
+                response.sendRedirect("./failure.html");
             }
                                   
-		Game gameBean = game.getGame(Long.parseLong(gameid));
-		session.setAttribute("gameBean", gameBean);
-        response.sendRedirect("./NewGame.jsp");                        
+                        
 	}
 
 }
