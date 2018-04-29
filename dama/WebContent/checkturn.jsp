@@ -9,6 +9,7 @@
 	if (gameBean != null){
 		Long gameid = gameBean.getGameid();
 		LoadGame game = new LoadGame();
+		String playerturn = gameBean.getPlayerturn();
 		gameBean = game.getGame(gameid);
 		session.setAttribute("gameBean", gameBean);
 	}

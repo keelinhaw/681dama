@@ -3,8 +3,8 @@
     import="javax.servlet.http.HttpSession,com.Dama.Game,com.Dama.LoadGame,java.sql.Connection,java.sql.DriverManager,java.sql.PreparedStatement,java.sql.ResultSet,com.Dama.GetPropertyValues" %>
     
 <%
-	Game gameBean2 = (Game) session.getAttribute("gameBean");
-	Long id = gameBean2.getGameid();
+	Game gameBean3 = (Game) session.getAttribute("gameBean");
+	Long id = gameBean3.getGameid();
 	//database connection details
 	GetPropertyValues properties = new GetPropertyValues();
 	String dburl = properties.getPropValues("dburl");
