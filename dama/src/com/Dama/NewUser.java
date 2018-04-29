@@ -34,7 +34,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.errors.IntrusionException;
 import org.owasp.esapi.errors.ValidationException;
@@ -45,7 +47,8 @@ import org.owasp.esapi.errors.ValidationException;
 @WebServlet("/NewUser")
 public class NewUser extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-        static Logger log = Logger.getLogger(NewUser.class);
+//        static Logger log = Logger.getLogger(NewUser.class);
+        private static final Logger log = LogManager.getLogger(NewUser.class);
         static Connection con = null;
         static int password_max_length = 16;
         static int email_max_length = 42;
