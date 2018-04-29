@@ -61,8 +61,7 @@ public class ReturnToGame extends HttpServlet {
                 session.invalidate();
                 response.sendRedirect("./failure.html");
             }
-                                  
-                        
+                                                         
 	}
 
 }
