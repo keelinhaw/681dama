@@ -23,7 +23,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -33,7 +34,8 @@ import org.apache.log4j.Logger;
 public class GameHistory extends HttpServlet {
 
     
-        static Logger log = Logger.getLogger(GameHistory.class);
+//        static Logger log = Logger.getLogger(GameHistory.class);
+         private static final Logger log = LogManager.getLogger(GameHistory.class);
         static Connection con = null;
     
                 
