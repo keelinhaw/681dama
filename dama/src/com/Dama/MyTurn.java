@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,6 +16,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
 
 import java.lang.reflect.Method;
 
@@ -27,6 +30,7 @@ public class MyTurn extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	Game gameBean = new Game();
 	String captureLocation = null;
+	static Logger log = Logger.getLogger(MyTurn.class);
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -66,7 +70,7 @@ public class MyTurn extends HttpServlet {
 	        piece = (String) move1.invoke(gameBean);
         }
         catch (Exception e) {
-        		e.printStackTrace(System.out);
+        		log.error("Exception in MyTurn : " + e );
         }
         //Check if the piece you are moving is the correct piece
         if (checkPiece(player1, player2, playerturn, piece)) {
@@ -80,7 +84,7 @@ public class MyTurn extends HttpServlet {
 			        move3.invoke(gameBean, piece);
 		        }
 		        catch (Exception e) {
-		        		e.printStackTrace(System.out);
+		        		log.error("Exception in MyTurn : " + e );
 		        }
 	            if (playerturn.equals(player1)) {
 		        		gameBean.setPlayerturn(player2);
@@ -114,7 +118,7 @@ public class MyTurn extends HttpServlet {
 			ps.executeUpdate();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.error("Exception in MyTurn : " + e );
 		}
 	}
 	public boolean checkPiece (String player1, String player2, String playerturn, String piece) {
@@ -150,18 +154,17 @@ public class MyTurn extends HttpServlet {
 			else {
 				//Check if player if moving left or right
 				if(xOld == xNew) {
+					//Check if piece is just moving 1 space
 					if(yOld+1 == yNew || yOld-1 == yNew) {
 						String spacePiece = "";
 			            try {
 					        //Get piece (if any) at new location
-			            		System.out.println("calling get" + newLocale);
 				            	Method query = Game.class.getDeclaredMethod("get" + newLocale);
 				    	        spacePiece = (String) query.invoke(gameBean);
 				        }
 				        catch (Exception e) {
-				        		e.printStackTrace(System.out);
+				        		log.error("Exception in MyTurn : " + e );
 				        }
-			            System.out.println("The spacePiece is" + spacePiece);
 			            if (spacePiece.equals("X") || spacePiece.equals("O")) {
 				            	gameBean.setErrorstring("That space is already occupied!");
 			            		return false;
@@ -173,7 +176,6 @@ public class MyTurn extends HttpServlet {
 					}
 					//Check if piece is trying to jump opponent
 					if(yOld+2 == yNew || yOld-2 == yNew) {
-						System.out.println("Attempting to capture!");
 						String spacePiece = "";
 						String capture = "";
 						String spaceLocale = "";
@@ -183,18 +185,16 @@ public class MyTurn extends HttpServlet {
 				    	        spacePiece = (String) move.invoke(gameBean);
 				        }
 				        catch (Exception e) {
-				        		e.printStackTrace(System.out);
+				        		log.error("Exception in MyTurn : " + e );
 				        }
 			            //Check that jump to space is empty
 			            if (!spacePiece.equals("X") || !spacePiece.equals("O")) {
 			            		//Check if piece is jumping to right
 			            		if (yNew > yOld) {
 			            			spaceLocale = xOld + String.valueOf(yOld + 1);
-			            			System.out.println("Piece to check capture is " + spaceLocale);
 			            		}
 			            		else {
 			            			spaceLocale = xOld + String.valueOf(yOld - 1);
-			            			System.out.println("Piece to check capture is " + spaceLocale);
 			            		}
 				            try {
 						        //Get piece to capture location
@@ -202,7 +202,7 @@ public class MyTurn extends HttpServlet {
 					    	        capture = (String) query.invoke(gameBean);
 					        }
 					        catch (Exception e) {
-					        		e.printStackTrace(System.out);
+					        		log.error("Exception in MyTurn : " + e );
 					        }
 				            if(capture.equals(piece)) {
 				            		gameBean.setErrorstring("You can't capture your own piece!");
@@ -220,8 +220,6 @@ public class MyTurn extends HttpServlet {
 				}
 				//Check if player if moving forward
 				if(yOld == yNew) {
-					System.out.println("xNew index is: " + xArray.indexOf(xNew));
-					System.out.println("xOld index is: " + xArray.indexOf(xOld));
 					if((xArray.indexOf(xNew) - xArray.indexOf(xOld)) == 1) {
 						String spacePiece = "";
 			            try {
@@ -230,9 +228,8 @@ public class MyTurn extends HttpServlet {
 				    	        spacePiece = (String) query.invoke(gameBean);
 				        }
 				        catch (Exception e) {
-				        		e.printStackTrace(System.out);
+				        		log.error("Exception in MyTurn : " + e );
 				        }
-			            System.out.println("The spacePiece is: " + spacePiece);
 			            if (spacePiece.equals("X") || spacePiece.equals("O")) {
 			            		gameBean.setErrorstring("That space is already occupied!");
 		            			return false;
@@ -253,7 +250,7 @@ public class MyTurn extends HttpServlet {
 				    	        spacePiece = (String) move.invoke(gameBean);
 				        }
 				        catch (Exception e) {
-				        		e.printStackTrace(System.out);
+				        		log.error("Exception in MyTurn : " + e );
 				        }
 			            //Check that jump to space is empty
 			            if (spacePiece.equals(" ")) {
@@ -264,7 +261,7 @@ public class MyTurn extends HttpServlet {
 					    	        capture = (String) query.invoke(gameBean);
 					        }
 					        catch (Exception e) {
-					        		e.printStackTrace(System.out);
+					        		log.error("Exception in MyTurn : " + e );
 					        }
 				            if(capture.equals(piece)) {
 				            		gameBean.setErrorstring("You can't capture your own piece or blank space!");
@@ -296,21 +293,17 @@ public class MyTurn extends HttpServlet {
 			else {
 				//Check if player if moving left or right
 				if(xOld == xNew) {
-					//System.out.println("X coordinates match, trying to move left or right.");
-					//System.out.println("xOld: " + xOld + " | xNew: " + xNew + " | yOld: " + yOld + " | yNew: " + yNew);
 					//Check if piece is just moving 1 space
 					if(yOld+1 == yNew || yOld-1 == yNew) {
 						String spacePiece = "";
 			            try {
 					        //Get piece (if any) at new location
-			            		System.out.println("calling get" + newLocale);
 				            	Method query = Game.class.getDeclaredMethod("get" + newLocale);
 				    	        spacePiece = (String) query.invoke(gameBean);
 				        }
 				        catch (Exception e) {
-				        		e.printStackTrace(System.out);
+				        		log.error("Exception in MyTurn : " + e );
 				        }
-			            System.out.println("The spacePiece is" + spacePiece);
 			            if (spacePiece.equals("X") || spacePiece.equals("O")) {
 				            	gameBean.setErrorstring("That space is already occupied!");
 			            		return false;
@@ -322,7 +315,6 @@ public class MyTurn extends HttpServlet {
 					}
 					//Check if piece is trying to jump opponent
 					if(yOld+2 == yNew || yOld-2 == yNew) {
-						System.out.println("Attempting to capture!");
 						String spacePiece = "";
 						String capture = "";
 						String spaceLocale = "";
@@ -332,18 +324,16 @@ public class MyTurn extends HttpServlet {
 				    	        spacePiece = (String) move.invoke(gameBean);
 				        }
 				        catch (Exception e) {
-				        		e.printStackTrace(System.out);
+				        		log.error("Exception in MyTurn : " + e );
 				        }
 			            //Check that jump to space is empty
 			            if (!spacePiece.equals("X") || !spacePiece.equals("O")) {
 			            		//Check if piece is jumping to right
 			            		if (yNew > yOld) {
 			            			spaceLocale = xOld + String.valueOf(yOld + 1);
-			            			System.out.println("Piece to check capture is " + spaceLocale);
 			            		}
 			            		else {
 			            			spaceLocale = xOld + String.valueOf(yOld - 1);
-			            			System.out.println("Piece to check capture is " + spaceLocale);
 			            		}
 				            try {
 						        //Get piece to capture location
@@ -351,7 +341,7 @@ public class MyTurn extends HttpServlet {
 					    	        capture = (String) query.invoke(gameBean);
 					        }
 					        catch (Exception e) {
-					        		e.printStackTrace(System.out);
+					        		log.error("Exception in MyTurn : " + e );
 					        }
 				            if(capture.equals(piece)) {
 				            		gameBean.setErrorstring("You can't capture your own piece!");
@@ -369,8 +359,6 @@ public class MyTurn extends HttpServlet {
 				}
 				//Check if player if moving forward
 				if(yOld == yNew) {
-					//System.out.println("xNew index is: " + xArray.indexOf(xNew));
-					//System.out.println("xOld index is: " + xArray.indexOf(xOld));
 					if((xArray.indexOf(xOld) - xArray.indexOf(xNew)) == 1) {
 						String spacePiece = "";
 			            try {
@@ -379,9 +367,8 @@ public class MyTurn extends HttpServlet {
 				    	        spacePiece = (String) query.invoke(gameBean);
 				        }
 				        catch (Exception e) {
-				        		e.printStackTrace(System.out);
+				        		log.error("Exception in MyTurn : " + e );
 				        }
-			            //System.out.println("The spacePiece is: " + spacePiece);
 			            if (spacePiece.equals("X") || spacePiece.equals("O")) {
 			            		gameBean.setErrorstring("That space is already occupied!");
 		            			return false;
@@ -402,7 +389,7 @@ public class MyTurn extends HttpServlet {
 				    	        spacePiece = (String) move.invoke(gameBean);
 				        }
 				        catch (Exception e) {
-				        		e.printStackTrace(System.out);
+				        		log.error("Exception in MyTurn : " + e );
 				        }
 			            //Check that jump to space is empty
 			            if (spacePiece.equals(" ")) {
@@ -413,7 +400,7 @@ public class MyTurn extends HttpServlet {
 					    	        capture = (String) query.invoke(gameBean);
 					        }
 					        catch (Exception e) {
-					        		e.printStackTrace(System.out);
+					        		log.error("Exception in MyTurn : " + e );
 					        }
 				            if(capture.equals(piece)) {
 				            		gameBean.setErrorstring("You can't capture your own piece or blank space!");
@@ -430,7 +417,6 @@ public class MyTurn extends HttpServlet {
 					else {
 						gameBean.setErrorstring("Illegal move!");
 						return false;
-						//System.out.println("Invalid move. Please try again!");
 					}	
 				}
 				else {
@@ -464,11 +450,21 @@ public class MyTurn extends HttpServlet {
 			    ps.setString(3, opponent);
 			    ps.setLong(4, gameid);
 			    ps.executeUpdate();
+			    
+			    String updateStatistics = "UPDATE user_statistics SET win=win+1 WHERE username=?";
+			    ps = con.prepareStatement(updateStatistics);
+			    ps.setString(1, playerturn);
+			    ps.executeUpdate();
+			    
+			    updateStatistics = "UPDATE user_statistics SET loss=loss+1 WHERE username=?";
+			    ps = con.prepareStatement(updateStatistics);
+			    ps.setString(1, opponent);
+			    ps.executeUpdate();
+			    con.close();
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				log.error("Exception in MyTurn : " + e );
 			}
-			System.out.println("The game is finished!");
 			return true;
 		}
 		return false;
@@ -492,17 +488,18 @@ public class MyTurn extends HttpServlet {
 		    
 		    if(captureLocation != null) {
 			    String updateCapture = "UPDATE game_board SET " + captureLocation + "=? WHERE id=?";
-			    System.out.println("Capture location is:" + captureLocation);
 			    ps = con.prepareStatement(updateCapture);
 			    ps.setString(1, " ");
 			    ps.setLong(2, gameid);
 			    ps.executeUpdate();
 		    }
+		    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 		    
-		    String turn = "UPDATE games SET playerturn=? WHERE id=?";
+		    String turn = "UPDATE games SET playerturn=?, last_move=? WHERE id=?";
 		    ps = con.prepareStatement(turn);
 		    ps.setString(1, playerturn);
-		    ps.setLong(2, gameid);
+		    ps.setTimestamp(2, timestamp);
+		    ps.setLong(3, gameid);
 		    ps.executeUpdate();
 		    
 		    String move = "INSERT INTO game_moves (id, player, oldlocale, newlocale) VALUES (?,?,?,?)";
@@ -515,7 +512,7 @@ public class MyTurn extends HttpServlet {
     			con.close();
 		}
         catch (Exception e) {
-    			e.printStackTrace();
+        		log.error("Exception in MyTurn : " + e );
 		}
 	}
 

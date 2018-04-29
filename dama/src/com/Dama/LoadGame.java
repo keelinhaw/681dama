@@ -5,9 +5,15 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Timestamp;
+
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
 
 public class LoadGame {
 	Game game;
+	static Logger log = Logger.getLogger(LoadGame.class);
 
 	public LoadGame() {
 	
@@ -77,9 +83,10 @@ public class LoadGame {
 	    		ps.setString(33, "X");
 	    		ps.addBatch();
 	        int[] results = ps.executeBatch();
+	        con.close();
         }
 		catch (Exception e) {
-			e.printStackTrace(System.out);
+			log.error("Exception in Game : " + e );
 		}
         return gameid;
 	}
@@ -456,9 +463,9 @@ public class LoadGame {
 		    con.close();
 		}
 		catch (Exception e) {
-			e.printStackTrace(System.out);
+			log.error("Exception in Game : " + e );
 		}
 		return gameBean;
-	}
+	} 
 
 }

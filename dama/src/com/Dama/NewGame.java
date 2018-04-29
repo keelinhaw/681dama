@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
+
 
 /**
  * Servlet implementation class NewGame
@@ -23,6 +25,7 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/NewGame")
 public class NewGame extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	static Logger log = Logger.getLogger(NewGame.class);
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -56,7 +59,7 @@ public class NewGame extends HttpServlet {
 		    response.sendRedirect("./NewGame.jsp");                     
     		} 
         catch (Exception e) {
-        		e.printStackTrace();
+        		log.error("Exception in NewGame : " + e );
             response.sendRedirect("./failure.html");
         }
 
