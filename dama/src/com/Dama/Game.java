@@ -1,6 +1,15 @@
 package com.Dama;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import org.apache.log4j.Logger;
+
 public class Game {
+	static Logger log = Logger.getLogger(Game.class);
 	private long gameid;
 	private String player1;
 	private String player2;
@@ -73,6 +82,7 @@ public class Game {
 	private String h6;
 	private String h7;
 	private String h8;
+	Connection con;
 
 	public Game() {
 	}
@@ -509,5 +519,63 @@ public class Game {
 	public String getH8() {
 		return h8;
 	}
-
+	public void checkForfeit() {
+		Timestamp lastmove = new Timestamp(System.currentTimeMillis());
+		Timestamp currenttime = new Timestamp(System.currentTimeMillis());
+		try {
+	    		GetPropertyValues properties = new GetPropertyValues();
+	    		String dburl = properties.getPropValues("dburl");
+	    		String dbuser = properties.getPropValues("dbuser");
+	    		String dbpassword = properties.getPropValues("dbpassword");
+	    	    Class.forName("org.postgresql.Driver");
+	    	    con = DriverManager.getConnection (dburl,dbuser,dbpassword);
+		    String query = "SELECT last_move FROM games WHERE id=?";
+		    PreparedStatement ps = con.prepareStatement(query);
+			ps = con.prepareStatement(query);
+			ps.clearParameters();
+			ps.setLong(1, gameid);
+			ResultSet game = ps.executeQuery();
+		    if (game.next()) {
+		    		lastmove = game.getTimestamp("last_move");
+		    }
+		    long milliseconds = currenttime.getTime() - lastmove.getTime();
+		    int seconds = (int) milliseconds / 1000;
+		    if (seconds > 60) {
+		        String opponent = "";
+		        if (player1.equals(playerturn)){
+		        		opponent = player2;
+		        } else { opponent = player1; }
+			    String updateGame = "UPDATE games SET status=?, win=?, loss=? WHERE id=?";
+			    ps = con.prepareStatement(updateGame);
+			    ps.setString(1, "forfeit");
+			    ps.setString(2, opponent);
+			    ps.setString(3, playerturn);
+			    ps.setLong(4, gameid);
+			    ps.executeUpdate();
+			    
+			    String updateStatistics = "UPDATE user_statistics SET win=win+1 WHERE username=?";
+			    ps = con.prepareStatement(updateStatistics);
+			    ps.setString(1, opponent);
+			    ps.executeUpdate();
+			    
+			    updateStatistics = "UPDATE user_statistics SET loss=loss+1 WHERE username=?";
+			    ps = con.prepareStatement(updateStatistics);
+			    ps.setString(1, playerturn);
+			    ps.executeUpdate();
+			    con.close();
+		    }
+		    con.close();
+	    }
+		catch (Exception e) {
+			log.error("Exception in Game : " + e );
+		}
+	}
+	protected void finalize() throws Throwable  
+	{  
+	    try { con.close(); } 
+	    catch (SQLException e) { 
+	    		log.error("Exception in Game : " + e );
+	    }
+	    super.finalize();  
+	}  
 }
