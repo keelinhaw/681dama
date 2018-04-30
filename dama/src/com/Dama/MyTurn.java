@@ -2,12 +2,10 @@ package com.Dama;
 
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 
 import javax.servlet.ServletException;
@@ -20,6 +18,11 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Method;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.errors.IntrusionException;
+import org.owasp.esapi.errors.ValidationException;
 
 
 /**
@@ -31,6 +34,8 @@ public class MyTurn extends HttpServlet {
 	Game gameBean = new Game();
 	String captureLocation = null;
 	static Logger log = Logger.getLogger(MyTurn.class);
+        static Connection con = null;
+        static int max_length = 2;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -45,7 +50,8 @@ public class MyTurn extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		//response.getWriter().append("Served at: ").append(request.getContextPath());
+                 log.debug("Attempt to access MyTun page with GET ");
 	}
 
 	/**
@@ -54,8 +60,6 @@ public class MyTurn extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String oldLocation = request.getParameter("oldLocation");
         String newLocation = request.getParameter("newLocation");
-        String oldLocale = oldLocation.toUpperCase();
-        String newLocale = newLocation.toUpperCase();
         HttpSession session = request.getSession();
         gameBean = (Game) session.getAttribute("gameBean");
         String playerturn = gameBean.getPlayerturn();
@@ -64,13 +68,36 @@ public class MyTurn extends HttpServlet {
         Long gameid = gameBean.getGameid();
         String piece = "";
         
+        //todo input validation
+        try {
+                    String cleaned_oldLocation; // canonicalize
+                    cleaned_oldLocation = ESAPI.validator().getValidInput("MyTurnPage_oldLocationField",oldLocation,
+                            "PieceLocation", // regex spec
+                            max_length, // max lengyh
+                            false, // no nulls
+                            true);
+                    
+                    String cleaned_newLocation; // canonicalize
+                    cleaned_newLocation = ESAPI.validator().getValidInput("MyTurnPage_newLocationField",newLocation,
+                            "PieceLocation", // regex spec
+                            max_length, // max lengyh
+                            false, // no nulls
+                            true);
+        
+                    String oldLocale = cleaned_oldLocation.toUpperCase();
+                    String newLocale = cleaned_newLocation.toUpperCase();
+
+        
+
+        
         try {
 	    		//Get the piece to move
 	        Method move1 = Game.class.getDeclaredMethod("get" + oldLocale);
 	        piece = (String) move1.invoke(gameBean);
         }
-        catch (Exception e) {
-        		log.error("Exception in MyTurn : " + e );
+        catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
+            java.util.logging.Logger.getLogger(ReturnToGame.class.getName()).log(Level.SEVERE, null, e);
+        		//log.error("Exception in MyTurn : " + e );
         }
         //Check if the piece you are moving is the correct piece
         if (checkPiece(player1, player2, playerturn, piece)) {
@@ -83,33 +110,41 @@ public class MyTurn extends HttpServlet {
 			        Method move3 = Game.class.getDeclaredMethod("set" + newLocale, String.class);
 			        move3.invoke(gameBean, piece);
 		        }
-		        catch (Exception e) {
+		        catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
 		        		log.error("Exception in MyTurn : " + e );
 		        }
 	            if (playerturn.equals(player1)) {
 		        		gameBean.setPlayerturn(player2);
-		        		updateMove(piece, oldLocation, newLocation, player1, player2, gameid);
+		        		updateMove(piece, cleaned_oldLocation, cleaned_newLocation, player1, player2, gameid);
 		        }
 		        else {
 		        		gameBean.setPlayerturn(player1);
-		        		updateMove(piece, oldLocation, newLocation, player2, player1, gameid);
+		        		updateMove(piece, cleaned_oldLocation, cleaned_newLocation, player2, player1, gameid);
 		        }
-			checkWon(newLocale, player1, player2, playerturn, gameid);
         		}
+        		checkWon(newLocale, player1, player2, playerturn, gameid);
         }
         saveError(gameid);
         session.setAttribute("gameBean", gameBean);
         response.sendRedirect("./NewGame.jsp");
-	}
-	public void saveError (Long gameid) {
+        
+                       } catch (ValidationException ex) {
+                java.util.logging.Logger.getLogger(JoinGame.class.getName()).log(Level.SEVERE, null, ex);
+                response.sendRedirect("./failure.html");
+        } catch (IntrusionException ex) {
+                java.util.logging.Logger.getLogger(JoinGame.class.getName()).log(Level.SEVERE, null, ex);
+//                Potential Intrusion Attempt
+                //if valid user, then lock the user's account. If user loggedin invalidate session
+                session.invalidate();
+                response.sendRedirect("./failure.html");
+        }
+}
+
+        
+        public void saveError (Long gameid) {
 		String errorString = gameBean.getErrorstring();
 		try {
-			GetPropertyValues properties = new GetPropertyValues();
-			String dburl = properties.getPropValues("dburl");
-			String dbuser = properties.getPropValues("dbuser");
-			String dbpassword = properties.getPropValues("dbpassword");
-	    	    Class.forName("org.postgresql.Driver");
-	    	    Connection con = DriverManager.getConnection (dburl,dbuser,dbpassword);
+			con = ConnectionManager.getConnection();
 	    		String updateError = "UPDATE games SET error_message=? WHERE id=?";
 	    		PreparedStatement ps = con.prepareStatement(updateError);
 			ps.clearParameters();
@@ -117,7 +152,7 @@ public class MyTurn extends HttpServlet {
 			ps.setLong(2, gameid);
 			ps.executeUpdate();
 		}
-		catch (Exception e) {
+		catch (SQLException e) {
 			log.error("Exception in MyTurn : " + e );
 		}
 	}
@@ -162,7 +197,7 @@ public class MyTurn extends HttpServlet {
 				            	Method query = Game.class.getDeclaredMethod("get" + newLocale);
 				    	        spacePiece = (String) query.invoke(gameBean);
 				        }
-				        catch (Exception e) {
+				        catch ( IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
 				        		log.error("Exception in MyTurn : " + e );
 				        }
 			            if (spacePiece.equals("X") || spacePiece.equals("O")) {
@@ -184,7 +219,7 @@ public class MyTurn extends HttpServlet {
 				            	Method move = Game.class.getDeclaredMethod("get" + newLocale);
 				    	        spacePiece = (String) move.invoke(gameBean);
 				        }
-				        catch (Exception e) {
+				        catch ( IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
 				        		log.error("Exception in MyTurn : " + e );
 				        }
 			            //Check that jump to space is empty
@@ -201,7 +236,7 @@ public class MyTurn extends HttpServlet {
 					            	Method query = Game.class.getDeclaredMethod("get" + spaceLocale);
 					    	        capture = (String) query.invoke(gameBean);
 					        }
-					        catch (Exception e) {
+					        catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
 					        		log.error("Exception in MyTurn : " + e );
 					        }
 				            if(capture.equals(piece)) {
@@ -227,7 +262,7 @@ public class MyTurn extends HttpServlet {
 				            	Method query = Game.class.getDeclaredMethod("get" + newLocale);
 				    	        spacePiece = (String) query.invoke(gameBean);
 				        }
-				        catch (Exception e) {
+				        catch ( IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
 				        		log.error("Exception in MyTurn : " + e );
 				        }
 			            if (spacePiece.equals("X") || spacePiece.equals("O")) {
@@ -301,7 +336,7 @@ public class MyTurn extends HttpServlet {
 				            	Method query = Game.class.getDeclaredMethod("get" + newLocale);
 				    	        spacePiece = (String) query.invoke(gameBean);
 				        }
-				        catch (Exception e) {
+				        catch ( IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
 				        		log.error("Exception in MyTurn : " + e );
 				        }
 			            if (spacePiece.equals("X") || spacePiece.equals("O")) {
@@ -323,7 +358,7 @@ public class MyTurn extends HttpServlet {
 				            	Method move = Game.class.getDeclaredMethod("get" + newLocale);
 				    	        spacePiece = (String) move.invoke(gameBean);
 				        }
-				        catch (Exception e) {
+				        catch ( IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
 				        		log.error("Exception in MyTurn : " + e );
 				        }
 			            //Check that jump to space is empty
@@ -340,7 +375,7 @@ public class MyTurn extends HttpServlet {
 					            	Method query = Game.class.getDeclaredMethod("get" + spaceLocale);
 					    	        capture = (String) query.invoke(gameBean);
 					        }
-					        catch (Exception e) {
+					        catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
 					        		log.error("Exception in MyTurn : " + e );
 					        }
 				            if(capture.equals(piece)) {
@@ -366,7 +401,7 @@ public class MyTurn extends HttpServlet {
 				            	Method query = Game.class.getDeclaredMethod("get" + newLocale);
 				    	        spacePiece = (String) query.invoke(gameBean);
 				        }
-				        catch (Exception e) {
+				        catch ( IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
 				        		log.error("Exception in MyTurn : " + e );
 				        }
 			            if (spacePiece.equals("X") || spacePiece.equals("O")) {
@@ -388,7 +423,7 @@ public class MyTurn extends HttpServlet {
 				            	Method move = Game.class.getDeclaredMethod("get" + newLocale);
 				    	        spacePiece = (String) move.invoke(gameBean);
 				        }
-				        catch (Exception e) {
+				        catch ( IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
 				        		log.error("Exception in MyTurn : " + e );
 				        }
 			            //Check that jump to space is empty
@@ -399,7 +434,7 @@ public class MyTurn extends HttpServlet {
 					            	Method query = Game.class.getDeclaredMethod("get" + spaceLocale);
 					    	        capture = (String) query.invoke(gameBean);
 					        }
-					        catch (Exception e) {
+					        catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
 					        		log.error("Exception in MyTurn : " + e );
 					        }
 				            if(capture.equals(piece)) {
@@ -437,14 +472,11 @@ public class MyTurn extends HttpServlet {
 	        		opponent = player1;
 	        }
 			try {
-				GetPropertyValues properties = new GetPropertyValues();
-				String dburl = properties.getPropValues("dburl");
-				String dbuser = properties.getPropValues("dbuser");
-				String dbpassword = properties.getPropValues("dbpassword");
-			    Connection con = DriverManager.getConnection (dburl,dbuser,dbpassword);
+				con = ConnectionManager.getConnection();
 
 			    String updateGameboard = "UPDATE games SET status=?, win=?, loss=? WHERE id=?";
-			    PreparedStatement ps = con.prepareStatement(updateGameboard);
+			    PreparedStatement ps;
+                            ps = con.prepareStatement(updateGameboard);
 			    ps.setString(1, "complete");
 			    ps.setString(2, playerturn);
 			    ps.setString(3, opponent);
@@ -462,7 +494,7 @@ public class MyTurn extends HttpServlet {
 			    ps.executeUpdate();
 			    con.close();
 			}
-			catch (Exception e) {
+			catch (SQLException e) {
 				log.error("Exception in MyTurn : " + e );
 			}
 			return true;
@@ -473,11 +505,7 @@ public class MyTurn extends HttpServlet {
 		try {
 	        String oldLocation = oldLocale.toLowerCase();
 	        String newLocation = newLocale.toLowerCase();
-			GetPropertyValues properties = new GetPropertyValues();
-			String dburl = properties.getPropValues("dburl");
-			String dbuser = properties.getPropValues("dbuser");
-			String dbpassword = properties.getPropValues("dbpassword");
-		    Connection con = DriverManager.getConnection (dburl,dbuser,dbpassword);
+			con = ConnectionManager.getConnection();
 
 		    String updateGameboard = "UPDATE game_board SET " + oldLocation + "=?, " + newLocation + "=? WHERE id=?";
 		    PreparedStatement ps = con.prepareStatement(updateGameboard);
@@ -511,7 +539,7 @@ public class MyTurn extends HttpServlet {
 		    ps.executeUpdate();
     			con.close();
 		}
-        catch (Exception e) {
+        catch (SQLException e) {
         		log.error("Exception in MyTurn : " + e );
 		}
 	}
