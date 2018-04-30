@@ -111,10 +111,7 @@ public class NewUser extends HttpServlet {
 
                
                         con = ConnectionManager.getConnection();
-/*                                SecureRandom salt = new SecureRandom();
-                                byte bytes[] = new byte[20];
-                                salt.nextBytes(bytes);
-*/
+
 
                         String computed_hash = PasswordUtil.hashPassword(cleaned_password1);
                                 
@@ -123,10 +120,11 @@ public class NewUser extends HttpServlet {
                         ck.clearParameters();
                         ck.setString(1, cleaned_username);
                          log.debug("Executing query to check if user already exists"); 
-                        ResultSet foundUser = ck.executeQuery();
+                        ResultSet foundUser;
+                        foundUser = ck.executeQuery();
                         boolean userExists = foundUser.next();
 
-//todo// also check if email already exists to avoid unique constraint violation exception
+//todo//done// also check if email already exists to avoid unique constraint violation exception
 
 		    	String checkEmail = "SELECT email from dama_user where email=?";
                         PreparedStatement cke = con.prepareStatement(checkEmail);
@@ -190,7 +188,7 @@ public class NewUser extends HttpServlet {
                                     
                                     String locked_user = ESAPI.encoder().encodeForXML(valid_username);
                                     
- //todo//                                   // lock the user account
+ //todo//                                   // might want to lock the user account
                                 log.error("Deactivating user account due to Intrusion Exception : " + locked_user );
                         
                                 } catch (IntrusionException | ValidationException ex) {
