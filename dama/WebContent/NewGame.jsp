@@ -5,7 +5,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
-		import="javax.servlet.http.HttpSession,com.Dama.Game,java.io.*,java.text.*,java.util.*" %>
+		import="javax.servlet.http.HttpSession,com.Dama.Game,java.io.*,java.text.*,java.util.*,org.apache.logging.log4j.LogManager,org.apache.logging.log4j.Logger" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -97,11 +97,21 @@ th, td {
 		<%@ include file="checkturn.jsp" %>
 		<form action="./MyTurn" method="POST">
 		<%
-				String playerturn = gameBean.getPlayerturn();
-				String gamestatus = gameBean.getGamestatus();
-				String winner = gameBean.getWin();
-				String errorstring = gameBean.getErrorstring();
-				String currentplayer = (String) session.getAttribute("username");
+                    Logger log = LogManager.getLogger("NewGame");
+                    String playerturn = "";
+                    String gamestatus = "";
+                    String winner = "";
+                    String errorstring = "";
+                    String currentplayer = "";
+                    
+                    try {
+                            
+
+				 playerturn = gameBean.getPlayerturn();
+				 gamestatus = gameBean.getGamestatus();
+				 winner = gameBean.getWin();
+				 errorstring = gameBean.getErrorstring();
+				 currentplayer = (String) session.getAttribute("username");
 		        if(gamestatus.equals("new")){
 		        		response.setIntHeader("Refresh", 2);
 		        		out.println("<center><i>Waiting for player to join!</i></center>");
@@ -132,6 +142,11 @@ th, td {
 						out.println("</center>");
 					}
 		        }
+                        } catch (Exception e) {
+                            log.debug("Error occured in NewGame: " + e);
+                            response.sendRedirect("./failure.html");
+                        }                        
+
         		%>
         <%-- <div class=error>${gameBean.errorstring}</div> --%>
         	</form>
