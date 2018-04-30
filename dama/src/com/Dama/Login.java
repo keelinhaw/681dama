@@ -47,7 +47,9 @@ public class Login extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+//		response.getWriter().append("Served at: ").append(request.getContextPath());
+                log.debug("Attempt to access login page with GET ");
+ //                   response.sendRedirect("./login.html");
 	}
 
 	/**
@@ -59,10 +61,6 @@ public class Login extends HttpServlet {
         String password = request.getParameter("password");
         
 
-        
-
-
-//        RequestDispatcher dispatcher;
 
         try {
             
@@ -74,39 +72,29 @@ public class Login extends HttpServlet {
                                   username_max_length, // max lengyh
                                   false, // no nulls
                                   true); // canonicalize
- //todo//                           
- /*                           String cleaned_password = ESAPI.validator().getValidInput("LoginPage_PasswordField",password,
+ 
+                        String cleaned_password = ESAPI.validator().getValidInput("LoginPage_PasswordField",password,
                                   "ComplexPassword", // regex spec
                                   password_max_length, // max lengyh
                                   false, // no nulls
                                                                       true); // canonicalize            
- */           
- 
-//        HttpSession session = request.getSession(true); 
-        ESAPI.httpUtilities().setCurrentHTTP(request, response);
- /*                       User user = ESAPI.authenticator().login(request, response);
-                        user.addSession(session);
-*/                        
-			if(Validate.checkUser(cleaned_username, password)) {
+          
 
+                        ESAPI.httpUtilities().setCurrentHTTP(request, response);
+                      
+			if(Validate.checkUser(cleaned_username, cleaned_password)) {
 
+                        // change session id after login to avoid session fixation
                         HttpSession session = ESAPI.httpUtilities().changeSessionIdentifier(request);
 //                        HttpSession session = request.getSession(true);
-		        session.setAttribute("username", username);
+		        session.setAttribute("username", cleaned_username);
                         
-                        //Opponent player = new Opponent();
-		        //player.newOpponent(username);
-                        
-//				response.sendRedirect("/681dama/landing.jsp");
+
                                 ESAPI.httpUtilities().sendRedirect(response, "/681dama/landing.jsp");
-//                                ESAPI.httpUtilities().sendForward(request, response, "WEB-INF/landing.jsp");
-//                                dispatcher = request.getRequestDispatcher("./landing.jsp");
-//				dispatcher.forward(request, response);
+
 			}
 			else {
 				response.sendRedirect("./failure.html");
-//				dispatcher = request.getRequestDispatcher("WEB-INF/failure.html");
-//				dispatcher.forward(request, response);
 			}
 		} catch (ClassNotFoundException | SQLException e) {
                     log.debug("Login Error" + e);
@@ -114,8 +102,6 @@ public class Login extends HttpServlet {
                 catch (ValidationException | AuthenticationException e){
                     log.debug("Login Error " + e);
                     response.sendRedirect("./failure.html");
- //                   dispatcher = request.getRequestDispatcher("WEB-INF/failure.html");
- //                   dispatcher.forward(request, response);
                 }
                 catch ( AccessControlException e ){
                     log.debug("Login Error " + e);
