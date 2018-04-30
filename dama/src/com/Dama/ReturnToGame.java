@@ -1,9 +1,6 @@
 package com.Dama;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.logging.log4j.LogManager;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.errors.IntrusionException;
 import org.owasp.esapi.errors.ValidationException;
@@ -25,7 +21,7 @@ import org.owasp.esapi.errors.ValidationException;
 public class ReturnToGame extends HttpServlet {
 	private static final long serialVersionUID = 1L;
         static int max_length = 14;
-        private static final org.apache.logging.log4j.Logger log = LogManager.getLogger(ReturnToGame.class);
+
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -41,13 +37,14 @@ public class ReturnToGame extends HttpServlet {
                 
                 
             try {
-                String cleaned_gameid = ESAPI.validator().getValidInput("ReturnToGameInput_fromLandingPage_GameIdField",gameid,
-                        "GameID", // regex spec
-                        max_length, // max lengyh
-                        false, // no nulls
-                        true); // canonicalize
+                String cleaned_gameid; // canonicalize
+                    cleaned_gameid = ESAPI.validator().getValidInput("ReturnToGameInput_fromLandingPage_GameIdField",gameid,
+                            "GameID", // regex spec
+                            max_length, // max lengyh
+                            false, // no nulls
+                            true);
                 
-                Game gameBean = game.getGame(Long.parseLong(gameid));
+                Game gameBean = game.getGame(Long.parseLong(cleaned_gameid));
 		session.setAttribute("gameBean", gameBean);
                 response.sendRedirect("./NewGame.jsp");
                 
