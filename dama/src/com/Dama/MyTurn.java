@@ -121,8 +121,9 @@ public class MyTurn extends HttpServlet {
 		        		gameBean.setPlayerturn(player1);
 		        		updateMove(piece, cleaned_oldLocation, cleaned_newLocation, player2, player1, gameid);
 		        }
+				checkWon(newLocale, player1, player2, playerturn, gameid);
         		}
-        		checkWon(newLocale, player1, player2, playerturn, gameid);
+
         }
         saveError(gameid);
         session.setAttribute("gameBean", gameBean);
